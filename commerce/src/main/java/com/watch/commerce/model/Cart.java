@@ -1,4 +1,5 @@
 package com.watch.commerce.model;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +35,9 @@ public class Cart {
     //bir sepette bir den fazla kart item olabilir
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> cartItems = new ArrayList<>();
+
+    private BigDecimal totalPrice;
+
+    private int quantity;
 
 }
