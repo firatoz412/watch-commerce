@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap – Saat Mağazası</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body class="h-full">
+
+<!-- ÜST BAR -->
+<div id="top-bar" class="w-full border-b py-2 bg-white" style="border-color:#e5e7eb;">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-sm">
+        <div class="flex gap-4">
+            <a href="/login" class="text-emerald-500 underline">Giriş Yap</a>
+            <a href="/register" class="hover:text-emerald-500" style="color:#1a1a1a;">Kayıt Ol</a>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="w-full border-b bg-white" style="border-color:#e5e7eb; padding:0;">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <!-- Logo -->
+            <div class="text-2xl font-bold primary-text" id="site-title">
+                <img src="/images/watches/logo.png" alt="Saat" style="width:125px;height:125px;transform: rotate(90deg);">
+
+            </div>
+        <a href="/HomePage.html" class="flex items-center gap-2 text-sm" style="color:#888; text-decoration:none;">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Ana Sayfaya Dön
+        </a>
+    </div>
+</header>
+
+<!-- İÇERİK -->
+<main style="min-height: calc(100vh - 180px); display: flex; align-items: center; padding: 48px 16px;">
+    <div class="max-w-5xl mx-auto w-full">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #ebebeb; overflow: hidden;">
+
+            <!-- SOL PANEL -->
+            <div class="side-panel">
+                <div class="watch-deco" style="border-color:#68676a; width:300px; height:300px; margin-bottom:32px;">
+                    <i data-lucide="watch" style="width:250px; height:250px; color:#68676a;"></i>
+                </div>
+
+                
+            </div>
+
+            <!-- SAĞ PANEL - FORM -->
+            <div style="background:#fff; padding: 48px 40px;">
+
+                <h1 class="page-title" style="font-size:32px; font-weight:500; margin-bottom:35px; text-align:center">Giriş Yap</h1>
+
+               <form th:action="@{/login}" method="post">
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div style="margin-bottom:20px;">
+                        <label class="form-label" for="email">E-posta Adresi</label>
+                        <input class="form-input" type="email" id="email" name ="username" placeholder="ornek@mail.com">
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <label class="form-label" for="password">Şifre</label>
+                        <div style="position:relative;">
+                            <input class="form-input" type="password" id="password" name="password" placeholder="••••••••" style="padding-right:44px;">
+                            <button class="toggle-password" type="button" onclick="togglePass('password', this)">
+                                <i data-lucide="eye" style="width:16px;height:16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#555; user-select:none;">
+                            <input type="checkbox" class="checkbox-custom">
+                            Beni hatırla
+                        </label>
+                        <a href="#" style="font-size:12px; color:#10b981; text-decoration:none; letter-spacing:0.05em;">
+                            Şifremi unuttum
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-bottom:20px;">
+                        Giriş Yap
+                    </button>
+
+                    <a href="/admin/login" style="width:100%; padding:12px 0; background:#fff; color:#888; font-family:'Jost',sans-serif; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; border:1px solid #e5e7eb; cursor:pointer; border-radius:3px; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; margin-bottom:20px; transition:all 0.2s;" onmouseover="this.style.borderColor='#1a1a1a'; this.style.color='#1a1a1a'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#888'">
+                        <i data-lucide="shield" style="width:14px; height:14px;"></i>
+                        Admin Girişi
+                    </a>
+
+                    <p style="text-align:center; font-size:13px; color:#888;">
+                        Hesabınız yok mu?
+                        <a href="/register" style="color:#10b981; text-decoration:none; font-weight:500;">Kayıt Ol</a>
+                    </p>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="w-full primary-bg text-white" style="padding: 24px 0;">
+    <div class="max-w-7xl mx-auto px-4">
+        <p style="text-align:center; font-size:13px; color:#666;">
+            © 2026 Saat Mağazası. Tüm hakları saklıdır.
+        </p>
+    </div>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    function togglePass(id, btn) {
+        const input = document.getElementById(id);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.innerHTML = isText
+            ? '<i data-lucide="eye" style="width:16px;height:16px;"></i>'
+            : '<i data-lucide="eye-off" style="width:16px;height:16px;"></i>';
+        lucide.createIcons();
+    }
+</script>
+
+</body>
+</html>
