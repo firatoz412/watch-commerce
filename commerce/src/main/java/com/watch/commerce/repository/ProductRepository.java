@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findById(Long productId);
 
-    Optional<Product> findByName(String productName);
+    Optional<Product> findByNameContaining(String productName);
 
     
     @Query("SELECT p FROM Product p WHERE " +
