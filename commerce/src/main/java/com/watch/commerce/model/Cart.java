@@ -1,7 +1,11 @@
 package com.watch.commerce.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -38,7 +42,7 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     private int quantity;
 
@@ -49,5 +53,40 @@ public class Cart {
         inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private List<Product> products = new ArrayList<>();
+
+
+    //sepettki itemler hashsette tutulur
+    //her bir ürün sete bir kez eklenir wuantity ile miktarı arttırlır
+    @OneToMany(mappedBy="cart",cascade=CascadeType.ALL,orphanRemoval=true)
+    @JsonManagedReference
+    private Set<CartItem> items = new HashSet<>();
+
+    private void updateTotalPrice(){
+        this.totalPrice = items.stream().map(item ->{
+
+         BigDecimal unitPrice = item.getUnitPrice();
+         if(unitPrice == null){
+            return BigDecimal.ZERO;
+         }   
+         return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+
+        }).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+
+     public void addItem(CartItem item){
+        this.items.add(item);
+        item.setCart(this);
+        updateTotalPrice();
+    }
+
+
+    public void removeItem(CartItem item){
+        this.items.remove(item);
+        item.setCart(this);
+        updateTotalPrice();
+    }
+
+    
 
 }
