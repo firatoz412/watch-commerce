@@ -1,4 +1,6 @@
 package com.watch.commerce.model;
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,4 +32,13 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
     private Integer quantity;
+
+    private BigDecimal unitPrice;
+    private BigDecimal totalPrice;
+
+
+
+    public void setTotalPrice(){
+        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
+    }
 }
