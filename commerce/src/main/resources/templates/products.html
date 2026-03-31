@@ -4,43 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koleksiyon | Saat Mağazası</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/product.css}">
+    <link rel="stylesheet" href="/css/Products.css">
 </head>
+<body>
 
-<body class="bg-[#fafafa] text-[#1a1a1a] font-['Jost']">
-
-<header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/homePage" class="text-2xl font-bold tracking-tight transition-opacity hover:opacity-70">
-            SAAT MAĞAZASI
-        </a>
-        <div class="flex gap-6 items-center text-sm font-medium">
-            <a href="/login" class="hover:text-[#f27a1a] transition-colors">Giriş Yap</a>
-            <div class="w-px h-4 bg-gray-200"></div>
-            <a href="/cart" class="hover:text-[#f27a1a] transition-colors flex items-center gap-2">
+<header>
+    <div class="header-inner">
+        <a href="/homePage" class="logo">SAAT MAĞAZASI</a>
+        <div class="header-actions">
+            <a href="/login" class="header-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Giriş Yap
+            </a>
+            <a th:href="${cart != null} ? @{'/cart/' + ${cart.id}} : @{/products}" class="header-btn cart">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
                 Sepetim
             </a>
         </div>
     </div>
 </header>
 
-<nav class="bg-white border-b border-gray-100 overflow-x-auto no-scrollbar py-4">
-    <div class="max-w-7xl mx-auto px-6">
-        <ul class="flex items-center justify-center space-x-4 list-none p-0 m-0 min-w-max">
+<nav>
+    <div class="nav-inner">
+        <ul class="brand-list">
             <li>
-                <a th:href="@{/products}" 
+                <a th:href="@{/products}"
                    class="brand-link"
                    th:classappend="${activeBrand == null} ? 'brand-active' : ''">
                     Tümü
                 </a>
             </li>
-
             <th:block th:each="brandName : ${ {'rolex','omega','tagheuer','seiko','tissot'} }">
                 <li>
-                    <a th:href="@{/products(brand=${brandName})}" 
+                    <a th:href="@{/products(brand=${brandName})}"
                        class="brand-link"
                        th:text="${#strings.capitalize(brandName)}"
                        th:classappend="${activeBrand == brandName} ? 'brand-active' : ''">
@@ -51,71 +55,68 @@
     </div>
 </nav>
 
-<main class="max-w-7xl mx-auto px-6 py-12">
-    
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        
-        <div th:each="product : ${products}" class="product-card relative">
-            
-            <div class="product-image-wrap aspect-[3/4]">
-                
-                <button class="btn-favorite" aria-label="Favorilere Ekle">
-                    ♥
+<main>
+    <div class="product-grid">
+
+        <div th:each="product : ${products}" class="product-card">
+
+            <div class="card-image-wrap">
+               <a th:href="@{/products(brand=${product.brand})}" class="card-badge">
+                   <span th:text="${#strings.toUpperCase(product.brand)}">MARKA</span>
+               </a>
+
+                <button class="btn-fav" aria-label="Favorilere Ekle">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </button>
 
-                <img th:if="${product.image != null}" 
-                     th:src="@{'/images/watches/' + ${product.image.imageUrl}}" 
-                     th:alt="${product.name}"
-                     class="transition-transform duration-500 hover:scale-105">
-                
-                <img th:if="${product.image == null}" 
-                     src="/images/watches/default.jpg" 
+                <img th:if="${product.image != null}"
+                     th:src="@{'/images/watches/' + ${product.image.imageUrl}}"
+                     th:alt="${product.name}">
+                <img th:if="${product.image == null}"
+                     src="/images/watches/default.jpg"
                      alt="Görsel Yok">
 
-                <a th:href="@{'/product/' + ${product.id}}" class="absolute inset-0 z-10"></a>
-
+                <a th:href="@{'/products/' + ${product.id}}" class="card-link-overlay" aria-label="Ürün Detayı"></a>
             </div>
 
-            <div class="product-info">
-                <div>
-                    <span class="product-brand"
-                          th:text="${#strings.toUpperCase(product.brand)}">
-                          marka
-                    </span>
-
-                    <h3 class="product-name"
-                        th:text="${product.name}">
-                        ürün adı
-                    </h3>
-                </div>
-                
-                <div class="mt-auto">
-                    <p class="product-price"
-                       th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
-                       fiyatı
-                    </p>
-                </div>
+            <div class="card-body">
+                <p class="card-name" th:text="${product.name}">Ürün Adı</p>
+                <p class="card-price"
+                   th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
+                    0 TL
+                </p>
             </div>
 
-            <!-- Sepete ekle -->
-            <form th:action="@{/cart/add}" method="post" class="relative z-20">
-                <input type="hidden" name="productId" th:value="${product.id}">
-                <button type="submit" class="btn-add-to-cart">
-                    SEPETE EKLE
-                </button>
-            </form>
+            <div class="card-footer">
+                <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="cartId" th:value="${cart != null ? cart.id : ''}">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <input type="hidden" name="quantity" value="1">
+                    
+                    <button type="submit" class="btn-cart">
+                        Sepete Ekle
+                    </button>
+                </form>
+
+                <a th:href="@{'/products/' + ${product.id}}" class="btn-detail" aria-label="Ürün Detayı">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </a>
+            </div>
 
         </div>
-
     </div>
 
-    <div th:if="${#lists.isEmpty(products)}"
-         class="flex flex-col items-center justify-center py-32 text-gray-400">
-        <p class="tracking-widest uppercase text-xs">
-            Aradığınız kriterlere uygun ürün bulunamadı.
-        </p>
+    <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>Aradığınız kriterlere uygun ürün bulunamadı.</p>
     </div>
-
 </main>
 
 </body>

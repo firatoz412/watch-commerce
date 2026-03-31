@@ -2,8 +2,10 @@ package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 import com.watch.commerce.model.Cart;
+import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.User;
 
 public interface ICartService {
@@ -23,6 +25,13 @@ public interface ICartService {
 
    //userId ye göre cart getir
     Optional<Cart> getCartByUserId(Long userId);
+
+
+    //carttaki itemleri al
+    Set<CartItem> getItems(Long cartId);
+    
+
+
 
 
 
