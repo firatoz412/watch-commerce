@@ -2,8 +2,10 @@ package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
@@ -28,7 +30,7 @@ public class CartService implements ICartService {
         .orElseThrow(() -> {
             throw new ResourceNotFoundException("cart not found");
         });
-        cart.setTotalPrice(calculateTotal(cart));
+        cart.updateTotalPrice();
         return cart;
     }
 
@@ -40,15 +42,14 @@ public class CartService implements ICartService {
     @Override
     public BigDecimal getTotalPrice(Long cartId) {
         Cart cart = getCartById(cartId);
-        return cart.getCartItems().stream()
-        .map(CartItem :: getTotalPrice)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return cart.getTotalPrice();
 }
 
     @Override
+    @Transactional
     public void clearCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> {throw new RuntimeException("cart not found");});
-        cart.getCartItems().clear();
+        Cart cart = getCartById(cartId);
+        cart.getItems().clear();
         cart.setTotalPrice(BigDecimal.ZERO);
         cartRepository.save(cart);
     }
@@ -65,10 +66,10 @@ public class CartService implements ICartService {
     }
 
 
-    public BigDecimal calculateTotal(Cart cart) {
-        return cart.getCartItems().stream()
-            .map(CartItem::getTotalPrice)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    @Override
+    public Set<CartItem> getItems(Long cartId) {
+        Cart cart = getCartById(cartId);
+        return cart.getItems();
     }
 
     
