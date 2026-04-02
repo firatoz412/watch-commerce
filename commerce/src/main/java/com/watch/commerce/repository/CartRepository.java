@@ -1,19 +1,16 @@
 package com.watch.commerce.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.watch.commerce.model.Cart;
+import com.watch.commerce.model.User;
 
 public interface  CartRepository extends JpaRepository<Cart, Long> {
 
-    Optional<Cart> findByUserId(Long userId);
+    void deleteCartById(Long cartId);
 
-    void deleteCartByUserId(Long userId);
+    boolean existsByUserId(Long userId);
 
-    Long existsByUserId(Long userId);
-
-    Cart getCartById(Long cartId);
+    Cart getCartByUser(User user);
     
 }

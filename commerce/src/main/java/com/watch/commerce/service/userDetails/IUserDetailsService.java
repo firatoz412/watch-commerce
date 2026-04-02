@@ -6,5 +6,6 @@ public interface IUserDetailsService extends org.springframework.security.core.u
     
     UserDetails loadUserByUsername(String username);
 
+   
 
 }
