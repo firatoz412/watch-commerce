@@ -26,11 +26,13 @@
 <header class="w-full border-b bg-white" style="border-color:#e5e7eb; padding:0;">
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
         <!-- Logo -->
-            <div class="text-2xl font-bold primary-text" id="site-title">
+            <a th:href="@{/}">
+                <div class="text-2xl font-bold primary-text" id="site-title">
                 <img src="/images/watches/logo.png" alt="Saat" style="width:125px;height:125px;transform: rotate(90deg);">
 
             </div>
-        <a href="/HomePage.html" class="flex items-center gap-2 text-sm" style="color:#888; text-decoration:none;">
+            </a>
+        <a th:href="@{/}" class="flex items-center gap-2 text-sm" style="color:#888; text-decoration:none;">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             Ana Sayfaya Dön
         </a>

@@ -13,7 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     List<Product> findAll();
-
+    
     List<Product> findByBrandIgnoreCase(String brand);
 
     Optional<Product> findById(Long productId);

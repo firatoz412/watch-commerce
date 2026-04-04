@@ -12,6 +12,7 @@ import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.repository.CartRepository;
 import com.watch.commerce.repository.ProductRepository;
+import com.watch.commerce.repository.UserRepository;
 
 @Service
 public class CartItemService implements ICartItemService {
@@ -19,13 +20,17 @@ public class CartItemService implements ICartItemService {
     private final CartService cartService;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public CartItemService(CartRepository cartRepository,
                            ProductRepository productRepository,
-                           CartService cartService) {
+                           CartService cartService,
+                        UserRepository userRepository
+                        ) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.cartService = cartService;
+        this.userRepository=userRepository;
     }
 
     @Override
@@ -43,6 +48,7 @@ public class CartItemService implements ICartItemService {
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
+        
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
@@ -72,13 +78,14 @@ public class CartItemService implements ICartItemService {
         cart.getItems().removeIf(
                 item -> item.getProduct().getId().equals(productId)
         );
-
         updateCartTotal(cart);
         cartRepository.save(cart);
     }
 
     @Override
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
+
+        Cart cart = cartService.getCartById(cartId);
 
         if (quantity < 0) {
             throw new IllegalArgumentException("quantity must be > 0");
@@ -89,7 +96,7 @@ public class CartItemService implements ICartItemService {
             return;
         }
 
-        Cart cart = cartService.getCartById(cartId);
+      
 
         CartItem item = cart.getItems().stream()
                 .filter(i -> i.getProduct().getId().equals(productId))
@@ -124,3 +131,19 @@ public class CartItemService implements ICartItemService {
         cart.setTotalPrice(totalAmount);
     }
 }
+
+
+//  @Override
+//     public void removeItemFromCart(String email,Long cartId, Long productId) {
+
+//         Cart cart = cartService.getCartById(cartId);
+//         User user = userRepository.findByEmail(email).orElseThrow();
+
+//         cart.getItems().removeIf(
+//                 item -> item.getProduct().getId().equals(productId)
+//         );
+
+//         cart.setUser(user);
+//         updateCartTotal(cart);
+//         cartRepository.save(cart);
+//     }

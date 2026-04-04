@@ -1,0 +1,25 @@
+package com.watch.commerce.dto;
+
+import java.math.BigDecimal;
+
+import com.watch.commerce.model.ProductImage;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
+@Data
+public class ProductDto {
+ 
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private String category;
+    private String brand;
+    private ProductImage images;
+    
+    
+}

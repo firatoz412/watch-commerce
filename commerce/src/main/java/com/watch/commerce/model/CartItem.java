@@ -1,6 +1,8 @@
 package com.watch.commerce.model;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class CartItem {
     //birden fazla cartItem bir cartta bulunabilir
     @ManyToOne 
     @JoinColumn(name = "cart_id")
+    @JsonBackReference
     private Cart cart;
     
     //birden fazla cartItem aynı product a sahip olabilir

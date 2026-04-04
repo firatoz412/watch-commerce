@@ -1,7 +1,6 @@
 package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -12,15 +11,18 @@ import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.User;
 import com.watch.commerce.repository.CartRepository;
+import com.watch.commerce.repository.UserRepository;
 
 
 @Service
 public class CartService implements ICartService {
 
     private final CartRepository cartRepository;
+    private final UserRepository userRepository;
 
-    public CartService(CartRepository cartRepository){
+    public CartService(CartRepository cartRepository, UserRepository userRepository){
         this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
     
     }
 
@@ -35,8 +37,8 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Optional<Cart> getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId);
+    public Cart getCartByUser(User user) {
+        return cartRepository.getCartByUser(user);
     }
 
     @Override
@@ -56,13 +58,20 @@ public class CartService implements ICartService {
 
 
     @Override
-    public Cart initializeNewCart(User user) {
-        return getCartByUserId(user.getId())
-            .orElseGet(() -> {
-                Cart cart = new Cart();
-                cart.setUser(user);
-                return cartRepository.save(cart);
-            });
+    public Cart initializeNewCart(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
+        Cart existingCart = cartRepository.getCartByUser(user);
+
+        if (existingCart != null) {//eğer userın sepeti var ise ona dön
+            return existingCart;
+        }
+
+        //yok ise user için yeni cart oluştur
+        Cart cart = new Cart();
+        cart.setUser(user);
+        return cartRepository.save(cart);
     }
 
 

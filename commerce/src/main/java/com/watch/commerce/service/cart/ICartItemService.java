@@ -5,6 +5,7 @@ import com.watch.commerce.model.CartItem;
 public interface  ICartItemService {
     
     //sepete item ekleme
+    //void addItemToCart(String email,Long cartId,Long productId,int quantity);
     void addItemToCart(Long cartId,Long productId,int quantity);
 
     //sepetteki ürünü kaldırma
@@ -15,4 +16,6 @@ public interface  ICartItemService {
 
     //sepetteki ürünü getirme
     CartItem getCartItem(Long cartId,Long productId);
+
+
 }

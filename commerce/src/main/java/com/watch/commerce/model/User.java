@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class User {
     private String email;
     private String password;
 
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
     //bir userın birden fazla rolü olabilir
     //mesela admin ve kullanıcı olabilir.
     @ManyToOne(fetch = FetchType.EAGER)
@@ -49,5 +53,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> addresses = new ArrayList<>();
 
+
+    
 
 }
