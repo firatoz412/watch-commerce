@@ -10,6 +10,7 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.Product;
+import com.watch.commerce.model.User;
 import com.watch.commerce.repository.CartRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.repository.UserRepository;
@@ -34,7 +35,7 @@ public class CartItemService implements ICartItemService {
     }
 
     @Override
-    public void addItemToCart(Long cartId, Long productId, int quantity) {
+    public void addItemToCart(String email,Long cartId, Long productId, int quantity) {
 
         if (quantity <= 0) {
             throw new IllegalArgumentException("quantity must be > 0");
@@ -48,6 +49,11 @@ public class CartItemService implements ICartItemService {
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
+        
+
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        cartService.initializeNewCart(user.getEmail());
         
 
         if (existingItem.isPresent()) {
