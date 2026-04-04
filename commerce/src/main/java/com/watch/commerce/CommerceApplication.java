@@ -8,6 +8,7 @@ public class CommerceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CommerceApplication.class, args);
+		//main sınıfı
 		System.out.println("spring çalıştı");
 	}
 
