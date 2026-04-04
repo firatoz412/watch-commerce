@@ -58,14 +58,20 @@ public class CartService implements ICartService {
 
 
     @Override
-public Cart initializeNewCart(String email) {
-    User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+    public Cart initializeNewCart(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
-    Cart existingCart = cartRepository.getCartByUser(user);
+        Cart existingCart = cartRepository.getCartByUser(user);
 
-    if (existingCart != null) {//eğer userın sepeti var ise ona dön
-        return existingCart;
+        if (existingCart != null) {//eğer userın sepeti var ise ona dön
+            return existingCart;
+        }
+
+        //yok ise user için yeni cart oluştur
+        Cart cart = new Cart();
+        cart.setUser(user);
+        return cartRepository.save(cart);
     }
 
     //yok ise user için yeni cart oluştur

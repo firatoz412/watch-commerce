@@ -49,6 +49,7 @@ public class CartItemService implements ICartItemService {
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
+        
 
         User user = userRepository.findByEmail(email).orElseThrow();
 
@@ -83,13 +84,14 @@ public class CartItemService implements ICartItemService {
         cart.getItems().removeIf(
                 item -> item.getProduct().getId().equals(productId)
         );
-
         updateCartTotal(cart);
         cartRepository.save(cart);
     }
 
     @Override
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
+
+        Cart cart = cartService.getCartById(cartId);
 
         if (quantity < 0) {
             throw new IllegalArgumentException("quantity must be > 0");
@@ -100,7 +102,7 @@ public class CartItemService implements ICartItemService {
             return;
         }
 
-        Cart cart = cartService.getCartById(cartId);
+      
 
         CartItem item = cart.getItems().stream()
                 .filter(i -> i.getProduct().getId().equals(productId))
@@ -135,3 +137,19 @@ public class CartItemService implements ICartItemService {
         cart.setTotalPrice(totalAmount);
     }
 }
+
+
+//  @Override
+//     public void removeItemFromCart(String email,Long cartId, Long productId) {
+
+//         Cart cart = cartService.getCartById(cartId);
+//         User user = userRepository.findByEmail(email).orElseThrow();
+
+//         cart.getItems().removeIf(
+//                 item -> item.getProduct().getId().equals(productId)
+//         );
+
+//         cart.setUser(user);
+//         updateCartTotal(cart);
+//         cartRepository.save(cart);
+//     }
