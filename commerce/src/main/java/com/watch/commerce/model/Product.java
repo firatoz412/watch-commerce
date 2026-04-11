@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,6 +26,7 @@ public class Product {
     private Long id;
     private String name;
     private BigDecimal price;
+    private int stock;
     
     //birden fazla ürün bir kategoriye ait olabilir
     @ManyToOne 
@@ -38,6 +38,7 @@ public class Product {
     //bir ürüne ait birden fazla resim olabilir
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private ProductImage image;
+
 
     
 }

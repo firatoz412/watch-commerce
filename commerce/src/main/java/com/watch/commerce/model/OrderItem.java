@@ -2,7 +2,6 @@ package com.watch.commerce.model;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -36,10 +35,8 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+    
+    private Integer quantity; //Miktar
 
-    @Column(nullable = false)
-    private Integer quantity; // Miktar
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal priceAtPurchase;
+    private BigDecimal priceAtPurchase;//satın alma fiyatı
 }
