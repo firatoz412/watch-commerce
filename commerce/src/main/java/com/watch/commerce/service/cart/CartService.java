@@ -72,13 +72,8 @@ public class CartService implements ICartService {
         Cart cart = new Cart();
         cart.setUser(user);
         return cartRepository.save(cart);
+    
     }
-
-    //yok ise user için yeni cart oluştur
-    Cart cart = new Cart();
-    cart.setUser(user);
-    return cartRepository.save(cart);
-}
 
 
     @Override
