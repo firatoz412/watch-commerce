@@ -7,7 +7,7 @@
             --text-muted: #999;
             --border: #f0f0f0;
             --bg-page: #f7f7f7;
-            --bg-card: #fff;
+            --bg-card: #ffffff;
             --radius: 12px;
         }
 
@@ -56,30 +56,30 @@
             font-size: 13px;
             font-weight: 500;
             text-decoration: none;
-            color: var(--text-secondary);
+            color: #000000;
             transition: all .2s;
             border: 1px solid transparent;
         }
         .header-btn:hover {
             background: var(--orange-light);
-            color: var(--orange);
-            border-color: #fde0c4;
+            color: white;
+            border-color: #ffffff;
+            background-color: black;
         }
         .header-btn.cart {
-            background: var(--orange);
-            color: #fff;
-            border-color: var(--orange);
+            background: white;
+            color: #000000;
         }
         .header-btn.cart:hover {
-            background: var(--orange-dark);
-            border-color: var(--orange-dark);
-            color: #fff;
+            background: black;
+            border-color: white;
+            color: #ffffff;
         }
         .header-btn svg { flex-shrink: 0; }
 
         /* ── BRAND NAV ── */
         nav {
-            background: #fff;
+            background: #ffffff;
             border-bottom: 1px solid var(--border);
         }
         .nav-inner {
@@ -200,7 +200,7 @@
             height: 36px;
             background: #fff;
             border-radius: 50%;
-            border: 1.5px solid var(--border);
+            border: 1.5px solid black;
             box-shadow: 0 2px 8px rgba(0,0,0,.07);
             display: flex;
             align-items: center;
@@ -213,17 +213,16 @@
             width: 16px;
             height: 16px;
             fill: none;
-            stroke: var(--text-muted);
+            stroke: black;
             stroke-width: 2;
             transition: all .2s;
         }
         .btn-fav:hover {
-            border-color: #ffb3b3;
-            box-shadow: 0 4px 12px rgba(242,80,80,.15);
+            border-color: #ffffff;
         }
         .btn-fav:hover svg {
-            stroke: #e74040;
-            fill: #ffe5e5;
+            stroke: #000000;
+            fill: #ff0000;
         }
 
         /* Product info */
@@ -295,8 +294,8 @@
             flex-shrink: 0;
         }
         .btn-detail svg { width: 15px; height: 15px; stroke: var(--text-muted); fill: none; stroke-width: 2; transition: stroke .2s; }
-        .btn-detail:hover { border-color: var(--orange); background: var(--orange-light); }
-        .btn-detail:hover svg { stroke: var(--orange); }
+        .btn-detail:hover { border-color: var(--orange); background: black; }
+        .btn-detail:hover svg { stroke: rgb(255, 255, 255); }
 
         /* Product link overlay (only covers image area) */
         .card-link-overlay {
