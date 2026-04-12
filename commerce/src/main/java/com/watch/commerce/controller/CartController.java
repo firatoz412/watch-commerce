@@ -27,7 +27,11 @@ public class CartController {
         this.cartItemService = cartItemService;
     }
 
-
+    @GetMapping
+    public String getCartPage(Model model){
+        model.addAttribute("cart",null);
+        return "cart";
+    }
 
     //sepet sayfasını görüntüle
     @GetMapping("/{cartId}")

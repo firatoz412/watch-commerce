@@ -74,22 +74,17 @@
                     <span class="text-xs mt-1">Favoriler</span>
                 </a>
 
-                <a th:if="${cart != null}" th:href="@{/cart/{id}(id=${cart.id})}" class="flex flex-col items-center hover:opacity-70 relative">
+                <a th:href="${cart != null} ? @{/cart/{id}(id=${cart.id})} : @{/cart}" 
+                    class="flex flex-col items-center hover:opacity-70 relative">
+                    
                     <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                     <span class="text-xs mt-1">Sepet</span>
 
                     <span class="accent-bg text-white text-xs rounded-full flex items-center justify-center absolute -top-1 -right-1 w-5 h-5"
-                        th:text="${#lists.size(cart.items)}">
+                        th:text="${cart != null ? #lists.size(cart.items) : '0'}">
                         0
                     </span>
                 </a>
-
-                <a th:if="${cart == null}" href="/login" class="flex flex-col items-center hover:opacity-70 relative">
-                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-                    <span class="text-xs mt-1">Sepet</span>
-                    <span class="accent-bg text-white text-xs rounded-full flex items-center justify-center absolute -top-1 -right-1 w-5 h-5">0</span>
-                </a>
-
             </div>
 
         </div>
