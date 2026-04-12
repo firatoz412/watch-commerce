@@ -1,7 +1,6 @@
 package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -10,10 +9,11 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.Product;
-import com.watch.commerce.model.User;
 import com.watch.commerce.repository.CartRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CartItemService implements ICartItemService {
@@ -34,48 +34,48 @@ public class CartItemService implements ICartItemService {
         this.userRepository=userRepository;
     }
 
-    @Override
-    public void addItemToCart(String email,Long cartId, Long productId, int quantity) {
-
+ @Override
+    @Transactional
+    public void addItemToCart(Long cartId, Long productId, int quantity) {
+      
         if (quantity <= 0) {
-            throw new IllegalArgumentException("quantity must be > 0");
+            throw new IllegalArgumentException("Miktar 0'dan büyük olmalıdır.");
         }
 
-        Cart cart = cartService.getCartById(cartId);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sepet bulunamadı."));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Ürün bulunamadı."));
 
-        Optional<CartItem> existingItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst();
-        
-
-        User user = userRepository.findByEmail(email).orElseThrow();
-
-        cartService.initializeNewCart(user.getEmail());
-        
-
-        if (existingItem.isPresent()) {
-            CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + quantity);
-            item.setUnitPrice(item.getProduct().getPrice());
-            item.setTotalPrice();
-        } else {
-            CartItem newItem = new CartItem();
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
-            newItem.setUnitPrice(product.getPrice());
-            newItem.setTotalPrice();
-            newItem.setCart(cart);
-
-            cart.getItems().add(newItem);
-        }
-
+        addOrUpdateItem(cart, product, quantity);
         updateCartTotal(cart);
         cartRepository.save(cart);
     }
 
+    private void addOrUpdateItem(Cart cart, Product product, int quantity) {
+        CartItem item = cart.getItems().stream()
+                .filter(i -> i.getProduct().getId().equals(product.getId()))
+                .findFirst()
+                .orElseGet(() -> createNewCartItem(cart, product));
+
+        if (item.getId() != null) { 
+            item.setQuantity(item.getQuantity() + quantity);
+        } else {
+            item.setQuantity(quantity);
+            cart.getItems().add(item);
+        }
+
+        item.setUnitPrice(product.getPrice());
+        item.setTotalPrice();
+    }
+
+    private CartItem createNewCartItem(Cart cart, Product product) {
+        CartItem newItem = new CartItem();
+        newItem.setCart(cart);
+        newItem.setProduct(product);
+        return newItem;
+    }
     @Override
     public void removeItemFromCart(Long cartId, Long productId) {
 
