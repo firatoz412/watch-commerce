@@ -1,0 +1,8 @@
+* { box-sizing: border-box; }
+    body { background-color: #f8f8f8; color: #1a1a1a; }
+    .primary-bg { background-color: #1a1a1a; }
+    .primary-text { color: #1a1a1a; }
+    .accent-green { color: #10b981; }
+    .accent-bg { background-color: #10b981; }
+    .accent-hover:hover { background-color: #059669; }
+    .border-subtle { border-color: #e5e7eb; }
