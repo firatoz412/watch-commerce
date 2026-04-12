@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol – Saat Mağazası</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+   
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body class="h-full">
+
+<!-- ÜST BAR -->
+<div id="top-bar" class="w-full border-b py-2 bg-white" style="border-color:#e5e7eb;">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-sm">
+        <div class="flex gap-4">
+            <a href="/login" style="color:#1a1a1a;">Giriş Yap</a>
+            <a href="/register" style="color:#10b981;" class="underline">Kayıt Ol</a>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="w-full border-b bg-white" style="border-color:#e5e7eb; padding: 16px 0;">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <a href="/" class="text-2xl font-bold primary-text" style="font-family:'Jost',sans-serif; letter-spacing:0.05em; text-decoration:none;">
+            SAAT MAĞAZASI
+        </a>
+        <a href="/" class="flex items-center gap-2 text-sm" style="color:#888; text-decoration:none;">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Ana Sayfaya Dön
+        </a>
+    </div>
+</header>
+
+
+<main style="min-height: calc(100vh - 180px); display: flex; align-items: center; padding: 48px 16px;">
+    <div class="max-w-5xl mx-auto w-full">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #ebebeb; overflow: hidden;">
+
+            <!-- SOL PANEL -->
+            <div class="side-panel">
+                <div >
+                    <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:32px;">
+                        <div style="width:300px; height:300px; border:1px solid #68676a; border-radius:50%; display:flex; justify-content:center; align-items:center;">
+                            <i data-lucide="watch" style="width:250px; height:250px; color:#68676a;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <!-- SAĞ PANEL - FORM -->
+            <div style="background:#fff; padding: 48px 40px;">
+
+                <h1 class="page-title" style="font-size:32px; margin-bottom:8px;">Hesap Oluştur</h1>
+        
+
+                <form th:action="@{/register}" method="post" th:object="${registerRequest}">
+
+                    <!-- AD SOYAD -->
+                    <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
+                        <div>
+                            <label class="form-label" for="firstName">Ad</label>
+                            <input class="form-input" type="text" id="firstName" th:field="*{firstName}"placeholder="Adınız">
+                        </div>
+                        <div>
+                            <label class="form-label" for="lastName">Soyad</label>
+                            <input class="form-input" type="text" id="lastName" th:field="*{lastName}" placeholder="Soyadınız" >
+                        </div>
+                    </div>
+
+                    <!-- E-POSTA -->
+                    <div style="margin-bottom:18px;">
+                        <label class="form-label" for="email">E-posta Adresi</label>
+                        <input class="form-input" type="email" id="email" th:field="*{email}" placeholder="ornek@mail.com" oninput="updateStep()">
+                        <span class="error-msg" id="emailErr">Geçerli bir e-posta adresi girin.</span>
+                    </div>
+
+                    <!-- ŞİFRE -->
+                    <div style="margin-bottom:6px;">
+                        <label class="form-label" for="password">Şifre</label>
+                        <div style="position:relative;">
+                            <input class="form-input" type="password" id="password" th:field="*{password}" placeholder="En az 8 karakter" style="padding-right:44px;">
+                            <button class="toggle-password" type="button" onclick="togglePass('password', this)">
+                                <i data-lucide="eye" style="width:16px;height:16px;"></i>
+                            </button>
+                        </div>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <span id="strengthLabel" style="font-size:11px; color:#aaa; margin-top:4px; display:block;"></span>
+                    </div>
+
+                    <!-- ŞİFRE TEKRAR -->
+                    <div style="margin-bottom:22px;">
+                        <label class="form-label" for="password2">Şifre Tekrar</label>
+                        <div style="position:relative;">
+                            <input class="form-input" type="password" id="password2" th:field="*{confirmPassword}" placeholder="Şifrenizi tekrar girin" style="padding-right:44px;" oninput="checkMatch()">
+                            <button class="toggle-password" type="button" onclick="togglePass('password2', this)">
+                                <i data-lucide="eye" style="width:16px;height:16px;"></i>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="passErr">Şifreler eşleşmiyor.</span>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-bottom:16px;">
+                        Hesap Oluştur
+                    </button>
+
+                    <div class="divider" style="margin-bottom:16px;">veya</div>
+
+                    <p style="text-align:center; font-size:13px; color:#888;">
+                        Zaten hesabınız var mı?
+                        <a href="/login" style="color:#10b981; text-decoration:none; font-weight:500;">Giriş Yapın</a>
+                    </p>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="w-full primary-bg text-white" style="padding: 24px 0;">
+    <div class="max-w-7xl mx-auto px-4">
+        <p style="text-align:center; font-size:13px; color:#666;">
+            © 2026 Saat Mağazası. Tüm hakları saklıdır.
+        </p>
+    </div>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    function togglePass(id, btn) {
+        const input = document.getElementById(id);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.innerHTML = isText
+            ? '<i data-lucide="eye" style="width:16px;height:16px;"></i>'
+            : '<i data-lucide="eye-off" style="width:16px;height:16px;"></i>';
+        lucide.createIcons();
+    }
+
+    //js ile şifre kontrolü backendde de kontrol yapıldı.
+    function checkMatch() {
+        const p1 = document.getElementById('password').value;
+        const p2 = document.getElementById('password2').value;
+        const err = document.getElementById('passErr');
+        if (p2.length > 0 && p1 !== p2) {
+            err.style.display = 'block';
+            document.getElementById('password2').classList.add('error');
+        } else {
+            err.style.display = 'none';
+            document.getElementById('password2').classList.remove('error');
+        }
+    }
+
+</script>
+
+</body>
+</html>
