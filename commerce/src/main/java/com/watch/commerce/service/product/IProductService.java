@@ -19,7 +19,7 @@ public interface IProductService {
 
     List<Product> findByBrandIgnoreCase(String brand);
 
-    Product findByNameContaining(String productName);
+    List<Product> findByNameContaining(String productName);
 
     List<Product> getProductsByBrand(String brand);
 
