@@ -1,5 +1,6 @@
 package com.watch.commerce.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.watch.commerce.exception.ProductNotFoundException;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.service.cart.CartService;
@@ -33,8 +33,7 @@ public class ProductController {
     public String products(
         @RequestParam(required = false) String brand,
         Model model,
-        @AuthenticationPrincipal UserDetails userDetails
-    ){
+        @AuthenticationPrincipal UserDetails userDetails){
         List<Product> products;
         
         if (brand != null && !brand.isEmpty()) {
@@ -57,13 +56,10 @@ public class ProductController {
     @GetMapping("/search")
     public String search(@RequestParam String name, Model model) {
 
-        List<Product> products;
+        List<Product> products = new ArrayList<>();
 
-        try {
-            Product product = productService.findByNameContaining(name);
-            products = List.of(product); 
-        } catch (ProductNotFoundException e) {
-            products = List.of(); // db'de ürün olmayabilir exception yerine boş liste döndürüyoruz.
+        if(!name.trim().isEmpty()){
+            products = productService.findByNameContaining(name);
         }
 
         model.addAttribute("products", products);
