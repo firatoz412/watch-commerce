@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr" class="h-full">
+<html lang="tr" class="h-full" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -24,8 +24,16 @@
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-sm">
 
             <div class="flex gap-4">
-                <a href="/login" class="hover:accent-green hover:underline">Giriş Yap</a>
-                <a href="/register" class="hover:accent-green hover:underline">Kayıt Ol</a>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="hover:accent-green hover:underline">Giriş Yap</a>
+                    <a href="/register" class="hover:accent-green hover:underline ml-4">Kayıt Ol</a>
+                </div>
+                <div sec:authorize="isAuthenticated()" class="flex gap-4 items-center">
+                    <a th:href="@{/hesabim}" class="hover:accent-green hover:underline">Hesabım</a>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="hover:accent-green hover:underline" style="background:none;border:none;cursor:pointer;font:inherit;color:inherit;">Çıkış Yap</button>
+                    </form>
+                </div>
             </div>
 
         </div>
@@ -64,7 +72,7 @@
             <!-- Sağ İkonlar -->
             <div class="flex items-center gap-6">
 
-                <a href="#" class="flex flex-col items-center hover:opacity-70">
+                <a th:href="@{/hesabim}" class="flex flex-col items-center hover:opacity-70">
                     <i data-lucide="user" class="w-6 h-6"></i>
                     <span class="text-xs mt-1">Hesabım</span>
                 </a>
