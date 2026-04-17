@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesabım | Saat Mağazası</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/Hesabim.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+    <div class="inner">
+        <a th:href="@{/}" class="logo">Saat Mağazası</a>
+        <div class="nav-links">
+            <a th:href="@{/products}">Ürünler</a>
+            <a th:href="@{/hesabim}" style="color:#10b981;">Hesabım</a>
+        </div>
+    </div>
+</header>
+
+<!-- Account Page -->
+<div class="account-page">
+
+    <h1 class="page-title">Hesabım</h1>
+
+    <div class="profile-card">
+
+        <!-- Profile Header with Avatar -->
+        <div class="profile-header">
+            <div class="avatar-circle">
+                <span th:text="${user.firstName != null ? user.firstName.substring(0,1) : '?'}">?</span>
+            </div>
+            <div class="profile-header-info">
+                <h2 th:text="${(user.firstName != null ? user.firstName : '') + ' ' + (user.lastName != null ? user.lastName : '')}">Ad Soyad</h2>
+                <p>Hoş geldiniz!</p>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Ad</span>
+                <div class="info-value" th:classappend="${user.firstName == null ? 'empty' : ''}"
+                     th:text="${user.firstName != null ? user.firstName : 'Belirtilmemiş'}">Ad</div>
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Soyad</span>
+                <div class="info-value" th:classappend="${user.lastName == null ? 'empty' : ''}"
+                     th:text="${user.lastName != null ? user.lastName : 'Belirtilmemiş'}">Soyad</div>
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">E-posta</span>
+                <div class="info-value" th:text="${user.email}">email@example.com</div>
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Telefon</span>
+                <div class="info-value" th:classappend="${user.phone == null ? 'empty' : ''}"
+                     th:text="${user.phone != null ? user.phone : 'Belirtilmemiş'}">0500 000 00 00</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="profile-actions">
+            <a th:href="@{/}" class="btn-back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Ana Sayfa
+            </a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn-logout">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Çıkış Yap
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,11 +1,679 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Page</title>
+    <title>Sipariş | Saat Mağazası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black:   #0f0f0f;
+            --gray-90: #1a1a1a;
+            --gray-60: #666;
+            --gray-40: #999;
+            --gray-20: #ccc;
+            --gray-10: #f2f2f2;
+            --border:  #e8e8e8;
+            --white:   #ffffff;
+            --green:   #27ae60;
+            --radius:  10px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #fafafa;
+            color: var(--black);
+            font-family: 'Jost', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: .14em;
+            color: var(--black);
+            text-decoration: none;
+        }
+        .logo:hover { opacity: .5; transition: opacity .2s; }
+        .header-nav { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-60);
+            text-decoration: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            transition: all .2s;
+        }
+        .nav-link:hover { background: var(--gray-10); color: var(--black); }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 36px;
+            font-weight: 400;
+            letter-spacing: -.01em;
+            color: var(--black);
+            margin-bottom: 6px;
+        }
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--gray-40);
+            font-weight: 400;
+        }
+
+        /* ── LAYOUT ── */
+        .order-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px 80px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ── FORM SECTIONS ── */
+        .form-section {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 16px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-section:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 4px 20px rgba(0,0,0,.04);
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--gray-40);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-label svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--gray-40);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* ── FORM ELEMENTS ── */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--gray-40);
+        }
+
+        input, select, textarea {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: var(--black);
+            font-size: 14px;
+            font-family: 'Jost', sans-serif;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gray-20);
+            box-shadow: 0 0 0 3px rgba(0,0,0,.04);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--gray-20);
+            font-weight: 400;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* ── CARD INPUT ── */
+        .card-input-group {
+            display: grid;
+            grid-template-columns: 1fr 120px 100px;
+            gap: 16px;
+        }
+
+        .card-icons {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .card-icon {
+            padding: 4px 10px;
+            background: var(--gray-10);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            color: var(--gray-60);
+        }
+
+        /* ── ORDER SUMMARY ── */
+        .summary-box {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            position: sticky;
+            top: 96px;
+        }
+
+        .summary-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--black);
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Summary Items */
+        .summary-items {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-10);
+            align-items: center;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item-image {
+            width: 56px;
+            height: 56px;
+            background: var(--gray-10);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-20);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .04em;
+            flex-shrink: 0;
+        }
+
+        .summary-item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .summary-item-brand {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--gray-40);
+            margin-bottom: 2px;
+        }
+
+        .summary-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--black);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .summary-item-qty {
+            font-size: 11px;
+            color: var(--gray-40);
+        }
+
+        .summary-item-price {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--black);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* Summary Totals */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .summary-row-label {
+            font-size: 13px;
+            color: var(--gray-60);
+            font-weight: 400;
+        }
+
+        .summary-row-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .summary-row-value.free,
+        .summary-row-value.discount {
+            color: var(--green);
+        }
+
+        .summary-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 20px 0;
+        }
+
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 24px;
+        }
+
+        .summary-total-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--black);
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .summary-total-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--black);
+        }
+
+        /* Promo */
+        .promo-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .promo-section input {
+            flex: 1;
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+
+        .promo-btn {
+            background: var(--gray-10);
+            border: 1px solid var(--border);
+            color: var(--black);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Jost', sans-serif;
+            letter-spacing: .04em;
+            transition: all .2s;
+        }
+
+        .promo-btn:hover {
+            background: var(--border);
+        }
+
+        /* Submit Button */
+        .btn-checkout {
+            width: 100%;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            padding: 15px 24px;
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity .2s, transform .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-checkout:hover { opacity: .8; transform: translateY(-1px); }
+        .btn-checkout:active { transform: translateY(0); }
+        .btn-checkout svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .summary-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--gray-10);
+            border-radius: 6px;
+        }
+        .summary-note svg { width: 14px; height: 14px; stroke: var(--gray-40); fill: none; stroke-width: 2; flex-shrink: 0; }
+        .summary-note span { font-size: 11px; color: var(--gray-60); line-height: 1.5; }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-40);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+            transition: color .2s;
+        }
+        .back-link:hover { color: var(--black); }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--black);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .checkbox-group label {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--gray-60);
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: normal;
+            line-height: 1.5;
+        }
+
+        .checkbox-group a {
+            color: var(--black);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            font-weight: 500;
+        }
+        .checkbox-group a:hover {
+            opacity: .6;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .page-header {
+                padding: 32px 20px 24px;
+            }
+            .order-layout {
+                grid-template-columns: 1fr;
+                padding: 24px 20px 60px;
+            }
+            .summary-box {
+                position: static;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .card-input-group {
+                grid-template-columns: 1fr;
+            }
+            .header-inner {
+                padding: 0 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    
+
+<!-- ── HEADER ── -->
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">SAAT MAĞAZASI</a>
+        <nav class="header-nav">
+            <a href="/products" class="nav-link">Koleksiyon</a>
+            <a href="/login" class="nav-link">Giriş Yap</a>
+            <a href="/register" class="nav-link">Kayıt Ol</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ── PAGE TITLE ── -->
+<div class="page-header">
+    <h1 class="page-title">Sipariş</h1>
+    <p class="page-subtitle">Bilgilerinizi girerek siparişinizi tamamlayın</p>
+</div>
+
+<!-- ── LAYOUT ── -->
+<div class="order-layout">
+    <div class="forms-column">
+
+        <!-- Teslimat Bilgileri -->
+        <div class="form-section">
+            <div class="section-label">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Teslimat Bilgileri
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">Ad</label>
+                    <input type="text" id="firstName" placeholder="Adınız">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Soyad</label>
+                    <input type="text" id="lastName" placeholder="Soyadınız">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" placeholder="ornek@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefon</label>
+                    <input type="tel" id="phone" placeholder="0(5XX) XXX XX XX">
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label for="address">Açık Adres</label>
+                <textarea id="address" placeholder="Mahalle, sokak, bina no, daire no..."></textarea>
+            </div>
+        </div>
+
+        <!-- Ödeme Bilgileri -->
+        <div class="form-section">
+            <div class="section-label">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                Ödeme Bilgileri
+            </div>
+            <div class="form-group">
+                <label for="cardName">Kart Üzerindeki İsim</label>
+                <input type="text" id="cardName" placeholder="AD SOYAD">
+            </div>
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="cardNumber">Kart Numarası</label>
+                <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+                <div class="card-icons">
+                    <span class="card-icon">VISA</span>
+                    <span class="card-icon">MC</span>
+                    <span class="card-icon">AMEX</span>
+                </div>
+            </div>
+            <div class="card-input-group" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label for="expiry">Son Kullanma Tarihi</label>
+                    <input type="text" id="expiry" placeholder="AA/YY">
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" placeholder="XXX">
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="saveCard">
+                <label for="saveCard">Kart bilgilerimi sonraki alışverişlerim için kaydet</label>
+            </div>
+        </div>
+
+        <!-- Sözleşme -->
+        <div class="form-section">
+            <div class="checkbox-group" style="margin-top: 0;">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                    <a href="/terms">Satış sözleşmesi</a> ve <a href="/privacy">gizlilik politikası</a>'nı okudum, kabul ediyorum.
+                </label>
+            </div>
+        </div>
+
+        <a href="/cart" class="back-link">← Sepete Geri Dön</a>
+    </div>
+
+    <!-- ── ORDER SUMMARY ── -->
+    <div class="summary-box">
+        <h3 class="summary-title">Sipariş Özeti</h3>
+
+        <div class="summary-items">
+            <div class="summary-item">
+                <div class="summary-item-image">GÖRSEL</div>
+                <div class="summary-item-details">
+                    <div class="summary-item-brand">ROLEX</div>
+                    <div class="summary-item-name">Submariner Date</div>
+                    <div class="summary-item-qty">Adet: 1</div>
+                </div>
+                <div class="summary-item-price">485.000 TL</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-item-image">GÖRSEL</div>
+                <div class="summary-item-details">
+                    <div class="summary-item-brand">OMEGA</div>
+                    <div class="summary-item-name">Seamaster 300</div>
+                    <div class="summary-item-qty">Adet: 1</div>
+                </div>
+                <div class="summary-item-price">285.000 TL</div>
+            </div>
+        </div>
+
+        <div class="promo-section">
+            <input type="text" placeholder="İndirim kodu">
+            <button class="promo-btn">Uygula</button>
+        </div>
+
+        <div class="summary-row">
+            <span class="summary-row-label">Ara Toplam</span>
+            <span class="summary-row-value">770.000 TL</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-row-label">Kargo</span>
+            <span class="summary-row-value free">Ücretsiz</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-row-label">İndirim</span>
+            <span class="summary-row-value discount">-0 TL</span>
+        </div>
+
+        <hr class="summary-divider">
+
+        <div class="summary-total-row">
+            <span class="summary-total-label">Toplam</span>
+            <span class="summary-total-value">770.000 TL</span>
+        </div>
+
+        <button class="btn-checkout">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Siparişi Tamamla
+        </button>
+
+        <div class="summary-note">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>256-bit SSL şifreleme ile güvenli ödeme</span>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
