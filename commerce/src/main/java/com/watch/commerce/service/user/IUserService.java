@@ -9,4 +9,6 @@ public interface IUserService {
     
     User getUser(String email);
 
+    User findByEmail(String email);
+
 }
