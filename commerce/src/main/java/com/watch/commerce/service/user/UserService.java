@@ -1,7 +1,5 @@
 package com.watch.commerce.service.user;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com.watch.commerce.model.User;
@@ -21,17 +19,6 @@ public class UserService implements IUserService {
         return userRepository.findByEmail(email).orElseThrow(null);
     }
 
-    @Override
-    public List<User> getAllUser() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
-    }
     
-    
-
     
 }

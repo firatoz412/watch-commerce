@@ -6,13 +6,25 @@
     <title th:text="${product.name + ' | Saat Mağazası'}">Ürün Detayı | Saat Mağazası</title>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/Product-detail.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </head>
 <body>
 
 <!-- ── HEADER ── -->
 <header>
     <div class="header-inner">
-        <a href="/homePage" class="logo">SAAT MAĞAZASI</a>
+    
+        <!-- Logo -->
+        <div class="text-2xl font-bold primary-text" id="site-title">
+            <a th:href="@{/}">
+                <img src="/images/watches/logo.png" alt="Saat" style="width:125px;height:125px;transform: rotate(90deg);">
+            </a>
+
+        </div>
+
         <nav class="header-nav">
             <a href="/products" class="nav-link">Koleksiyon</a>
             <a href="/login" class="nav-link">Giriş Yap</a>
@@ -126,6 +138,49 @@
 
     </div>
 </div>
+
+ <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="max-w-7xl mx-auto px-4 py-12">
+
+            <div class="grid grid-cols-2 gap-8">
+
+                <div class="writex">
+                    <h3 class="font-bold mb-4">Kurumsal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:accent-green hover:underline">Hakkımızda</a></li>
+                    </ul>
+                </div>
+
+                <div class="writex">
+                    <h3 class="font-bold mb-4">İletişim</h3>
+
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4 " style="color: white";></i>
+                            0850 000 00 00
+                        </li>
+
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            info@example.com
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="writex">
+                <p style="text-align:center;">
+                    © 2026 Saat Mağazası. Tüm hakları saklıdır.
+                </p>
+            </div>
+
+        </div>
+
+    </footer>
 
 </body>
 </html>
