@@ -39,6 +39,10 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private ProductImage image;
 
+    private String description;
+
+
+
 
     
 }
