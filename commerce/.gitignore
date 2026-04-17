@@ -43,4 +43,4 @@ Thumbs.db
 # Environment
 .env
 
-commerce/src/main/resources/application.properties
+/src/main/resources/application.properties
