@@ -22,7 +22,7 @@ public class SecurityConfig {
     http
         .authorizeHttpRequests(auth -> auth
         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-        .requestMatchers("/", "/register", "/login", "/homePage", "/products/**", "/product-detail/**", "/cart/**","/order/**").permitAll()   // /products/ altındaki her şey (detay sayfaları vs.)
+        .requestMatchers("/", "/register", "/login", "/homePage", "/products/**", "/product-detail/**", "/cart/**","/order/**","/search").permitAll()   // /products/ altındaki her şey (detay sayfaları vs.)
         .requestMatchers("/products/**").permitAll() //bütün product controller pathine izin ver
         .requestMatchers("/admin/**").hasRole("USER")
         .anyRequest().authenticated()
