@@ -43,5 +43,6 @@ Thumbs.db
 # Environment
 .env
 
+src/main/java/com/watch/commerce/config/SecurityConfig.java
 /src/main/resources/application.properties
 /src/main/java/com/watch/commerce/config/SecurityConfig.java
