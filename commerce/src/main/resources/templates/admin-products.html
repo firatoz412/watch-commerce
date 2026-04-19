@@ -133,15 +133,14 @@
                         <tr th:each="product, stat : ${products}" th:classappend="${stat.odd} ? 'row-odd' : ''">
                             <td class="cell-id" th:text="${product.id}">1</td>
 
-                            <td class="cell-img">
-                                <div class="thumb-wrap">
-                                    <img th:if="${product.image != null}"
-                                         th:src="@{'/images/watches/' + ${product.image.imageUrl}}"
-                                         th:alt="${product.name}">
-                                    <div th:if="${product.image == null}" class="thumb-placeholder">
-                                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                    </div>
-                                </div>
+                            <td>
+                                <img th:if="${product.image != null and !product.image.isEmpty()}"
+                                    th:src="@{'/images/watches/' + ${product.image[0].imageUrl}}"
+                                    style="width: 50px; height: 50px;">
+
+                                <img th:if="${product.image == null or product.image.isEmpty()}"
+                                    src="/images/default-watch.png"
+                                    style="width: 50px; height: 50px;">
                             </td>
 
                             <td class="cell-name">

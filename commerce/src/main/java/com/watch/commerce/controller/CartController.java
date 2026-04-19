@@ -1,5 +1,10 @@
 package com.watch.commerce.controller;
 
+import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -11,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.watch.commerce.model.Cart;
+import com.watch.commerce.model.CartItem;
+import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
+import com.watch.commerce.service.user.UserService;
 
 
 @Controller
@@ -21,15 +29,47 @@ public class CartController {
 
     private final CartItemService cartItemService;
     private final CartService cartService;
+    private final UserService userService;
 
-    public CartController(CartService cartService,CartItemService cartItemService){
+    public CartController(CartService cartService,CartItemService cartItemService,UserService userService){
         this.cartService = cartService;
         this.cartItemService = cartItemService;
+        this.userService = userService;
     }
 
+    //orderdaki ürünlerin verilerini db'den getir
     @GetMapping
-    public String getCartPage(Model model){
-        model.addAttribute("cart",null);
+    public String cart(Model model, Principal principal) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String email = principal.getName();
+        
+        User user = userService.findByEmail(email);
+        Cart cart = cartService.getCartByUser(user);
+        Set<CartItem> cartItems;
+        if (cart == null) {
+            cartItems = new HashSet<>();
+        } else {
+            cartItems = cart.getItems();
+        }
+       
+
+        BigDecimal subTotal = cartItems.stream()
+                .map(item -> item.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal discount = BigDecimal.ZERO;
+
+        BigDecimal total = subTotal.subtract(discount);
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("cartSubTotal", subTotal);
+        model.addAttribute("discount", discount);
+        model.addAttribute("cartTotal", total);
+
         return "cart";
     }
 
@@ -45,10 +85,14 @@ public class CartController {
 
     //sepete ürün ekleme
     @PostMapping("/add")
-    public String addItemToCart(@AuthenticationPrincipal UserDetails userDetails,
+    public String addItemToCart(Principal principal,
+                                @AuthenticationPrincipal UserDetails userDetails,
                                 @RequestParam(required=false) Long cartId,
                                 @RequestParam Long productId,
                                 @RequestParam(defaultValue="1") int quantity){//bu paramtereler html parametreleri ile aynı olmalı
+        if (principal == null) {
+            return "redirect:/login";
+        }
         if(cartId == null){
             Cart newCart = cartService.initializeNewCart(userDetails.getUsername());
             cartId = newCart.getId();
