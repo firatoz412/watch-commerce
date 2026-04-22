@@ -20,6 +20,11 @@ public class UserController {
 
     @GetMapping("/hesabim")
     public String hesabim(Principal principal, Model model) {
+
+        if(principal == null){
+            return "redirect:/login";
+        }
+
         String email = principal.getName(); 
         User user = userService.findByEmail(email);
         model.addAttribute("user", user);

@@ -47,7 +47,15 @@ public class Order {
 
     private BigDecimal totalPrice;
 
+    //teslimat bilgileri
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String address;
+
     private String paymentMethod;
+    private String transactionId;
     
 
 

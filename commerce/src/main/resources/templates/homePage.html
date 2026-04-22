@@ -82,7 +82,7 @@
                     <span class="text-xs mt-1">Favoriler</span>
                 </a>
 
-                <a th:href="${cart != null} ? @{/cart/{id}(id=${cart.id})} : @{/cart}" 
+                <a th:href="@{/cart}" 
                     class="flex flex-col items-center hover:opacity-70 relative">
                     
                     <i data-lucide="shopping-cart" class="w-6 h-6"></i>
@@ -92,6 +92,14 @@
                         th:text="${cart != null ? #lists.size(cart.items) : '0'}">
                         0
                     </span>
+                </a>
+                <a th:href="@{/order}" 
+                    class="flex flex-col items-center hover:opacity-70 relative">
+                    
+                    <i data-lucide="package" class="w-6 h-6"></i>
+                    <span class="text-xs mt-1">Siparişlerim</span>
+
+            
                 </a>
             </div>
 

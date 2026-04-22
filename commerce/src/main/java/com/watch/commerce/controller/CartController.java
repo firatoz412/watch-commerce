@@ -1,22 +1,17 @@
 package com.watch.commerce.controller;
 
-import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.watch.commerce.model.Cart;
-import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
@@ -37,49 +32,21 @@ public class CartController {
         this.userService = userService;
     }
 
-    //orderdaki ürünlerin verilerini db'den getir
-    @GetMapping
-    public String cart(Model model, Principal principal) {
-
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        String email = principal.getName();
-        
-        User user = userService.findByEmail(email);
-        Cart cart = cartService.getCartByUser(user);
-        Set<CartItem> cartItems;
-        if (cart == null) {
-            cartItems = new HashSet<>();
-        } else {
-            cartItems = cart.getItems();
-        }
-       
-
-        BigDecimal subTotal = cartItems.stream()
-                .map(item -> item.getProduct().getPrice()
-                        .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal discount = BigDecimal.ZERO;
-
-        BigDecimal total = subTotal.subtract(discount);
-
-        model.addAttribute("cartItems", cartItems);
-        model.addAttribute("cartSubTotal", subTotal);
-        model.addAttribute("discount", discount);
-        model.addAttribute("cartTotal", total);
-
-        return "cart";
-    }
 
     //sepet sayfasını görüntüle
-    @GetMapping("/{cartId}")
-    public String getCartById(@PathVariable Long cartId,Model model){
-        Cart cart = cartService.getCartById(cartId);
-        model.addAttribute("cart", cart);
-        model.addAttribute("items", cart.getItems());
-        model.addAttribute("totalPrice",cart.getTotalPrice());
+    @GetMapping
+    public String getCartById(Model model,Principal principal){
+
+        if(principal == null){
+            return "redirect:/login";
+        }
+
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        if (cart == null) {
+            model.addAttribute("cart", new Cart());
+        } else {
+            model.addAttribute("cart", cart);
+        }
         return "cart";
     }   
 
@@ -98,7 +65,7 @@ public class CartController {
             cartId = newCart.getId();
         }
         cartItemService.addItemToCart(cartId, productId, quantity);
-        return "redirect:/cart/" + cartId;
+        return "redirect:/cart";
 
     }
 
@@ -112,27 +79,42 @@ public class CartController {
 
     // Sepetten 1 ürün çıkar (sil butonu)
     @PostMapping("/remove")
-    public String removeItem(@RequestParam Long cartId, @RequestParam Long productId) {
-        cartItemService.removeItemFromCart(cartId, productId);
-        return "redirect:/cart/" + cartId;
+    public String removeItem(@RequestParam Long productId,Principal principal){
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByEmail(principal.getName());
+        Cart cart = cartService.getCartByUser(user);
+        
+        if(cart != null){
+            cartItemService.removeItemFromCart(cart.getId(), productId);
+        }
+        return "redirect:/cart";
     }
 
-    @PostMapping("/increase")
-    public String increaseQuantity(@RequestParam Long cartId,
-                                   @RequestParam Long productId,
-                                   @RequestParam int quantity){
-        cartItemService.updateItemQuantity(cartId, productId, quantity);
-        return "redirect:/cart/" + cartId;
+    @PostMapping("/update-quantity")
+    public String updateQuantity(@RequestParam Long productId, 
+                                 @RequestParam int quantity, 
+                                 Principal principal) {
+
+        if (principal == null){
+            return "redirect:/login";
+        }
+
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        
+        if (quantity <= 0) {
+            cartItemService.removeItemFromCart(cart.getId(), productId);
+        } else {
+            cartItemService.updateItemQuantity(cart.getId(), productId, quantity);
+        }
+        return "redirect:/cart";
     }
 
-    @PostMapping("/decrease")
-    public String decreaseQuantity(@RequestParam Long cartId,
-                                   @RequestParam Long productId,
-                                   @RequestParam int quantity){
-        cartItemService.updateItemQuantity(cartId,productId,quantity);
-        return "redirect:/cart/" +cartId;
+    
 
-    }
+   
 
   
     

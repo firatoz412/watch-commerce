@@ -28,8 +28,6 @@ public interface ICartService {
 
     //carttaki itemleri al
     Set<CartItem> getItems(Long cartId);
-    
-
 
 
 

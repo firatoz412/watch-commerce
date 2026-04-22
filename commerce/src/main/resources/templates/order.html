@@ -160,30 +160,10 @@
 
     </div>
 
-    <!-- PROMO -->
-    <div class="promo-section">
-        <input type="text" placeholder="İndirim kodu">
-        <button class="promo-btn">Uygula</button>
-    </div>
-
-    <!-- SUBTOTAL -->
-    <div class="summary-row">
-        <span class="summary-row-label">Ara Toplam</span>
-        <span class="summary-row-value"
-              th:text="${cartSubTotal} + ' TL'">0 TL</span>
-    </div>
-
     <!-- SHIPPING -->
     <div class="summary-row">
         <span class="summary-row-label">Kargo</span>
         <span class="summary-row-value free">Ücretsiz</span>
-    </div>
-
-    <!-- DISCOUNT -->
-    <div class="summary-row">
-        <span class="summary-row-label">İndirim</span>
-        <span class="summary-row-value discount"
-              th:text="'-' + ${discount} + ' TL'">-0 TL</span>
     </div>
 
     <hr class="summary-divider">
