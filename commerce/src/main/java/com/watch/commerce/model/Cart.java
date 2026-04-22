@@ -42,38 +42,6 @@ public class Cart {
 
     private BigDecimal totalPrice = BigDecimal.ZERO;
 
-
-    //sepet her değiştiğinde toplam fiyat güncellensin
-    public void updateTotalPrice(){
-        this.totalPrice = items.stream().map(item ->{
-
-         BigDecimal unitPrice = item.getUnitPrice();
-         if(unitPrice == null){
-            return BigDecimal.ZERO;
-         }   
-         return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
-
-        }).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-
-     public void addItem(CartItem item){
-        this.items.add(item);
-        item.setCart(this);
-        updateTotalPrice();
-    }
-
-
-    public void removeItem(CartItem item){
-        this.items.remove(item);
-        item.setCart(this);
-        updateTotalPrice();
-    }
-
-    public int getTotalItemCount() {
-        return items.stream().mapToInt(CartItem::getQuantity).sum();
-    }
-
     
 
 }

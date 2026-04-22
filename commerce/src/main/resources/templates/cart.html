@@ -27,19 +27,17 @@
     </div>
 </header>
 
-<!-- ── PAGE TITLE ── -->
 <div class="page-header">
     <h1 class="page-title">Sepetim</h1>
-    <p class="page-subtitle" th:if="${items != null and !#lists.isEmpty(items)}">
-        <span th:text="${#lists.size(items)}">0</span> ürün sepetinizde bekliyor
+    <p class="page-subtitle" th:if="${cart?.items != null and !#lists.isEmpty(cart.items)}">
+        <span th:text="${#lists.size(cart.items)}">0</span> ürün sepetinizde bekliyor
     </p>
 </div>
-
 <!-- ── LAYOUT ── -->
 <div class="cart-layout">
 
     <!-- EMPTY STATE -->
-    <div th:if="${items == null or #lists.isEmpty(items)}" class="empty-cart">
+    <div th:if="${cart?.items == null or #lists.isEmpty(cart.items)}" class="empty-cart">
         <div class="empty-icon">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -52,12 +50,12 @@
     </div>
 
     <!-- CART ITEMS -->
-    <div th:if="${items != null and !#lists.isEmpty(items)}" class="items-section">
+    <div th:if="${cart?.items != null and !#lists.isEmpty(cart.items)}" class="items-section">
         <div class="items-header">
             <span class="section-label">Ürünler</span>
         </div>
 
-        <div th:each="item : ${items}" class="cart-item">
+        <div th:each="item : ${cart.items}" class="cart-item">
 
             <!-- Image -->
             <div class="item-image">
@@ -79,22 +77,18 @@
                 <p class="item-name" th:text="${item.product.name}">Ürün Adı</p>
 
                 <div class="item-actions">
-                    <!-- miktarı azalt. -->
+                    <!-- miktarı artış ve azalış -->
                     <div class="qty-control">
-
-                        <form th:action="@{/cart/increase(cartId=${cart.id}, productId=${item.product.id}, quantity=${item.quantity - 1})}" method="post">
-                            <input type="hidden" name="productId" th:value="${item.product.id}">
-                            <button type="submit" class="qty-btn" aria-label="Azalt">−</button>
-                        </form>
-                        
-                        <span class="qty-value" th:text="${item.quantity}">1</span>
-
-                        <!-- miktarı arttır. -->
-                        <form th:action="@{/cart/increase(cartId=${cart.id}, productId=${item.product.id}, quantity=${item.quantity + 1})}" method="post">
-                            <input type="hidden" name="cartId" th:value="${item.cart.id}">
-                            <input type="hidden" name="productId" th:value="${item.product.id}">
-                            <input type="hidden" name="quantity" th:value="${item.quantity + 1}">
-                            <button type="submit" class="qty-btn" aria-label="Artır">+</button>
+                           <form th:action="@{/cart/update-quantity}" method="post">
+                                <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <input type="hidden" name="quantity" th:value="${item.quantity - 1}">
+                                <button type="submit" class="qty-btn" aria-label="Azalt">−</button>
+                          </form>
+                          <span class="qty-value" th:text="${item.quantity}">ürün miktarını gösterir</span>
+                          <form th:action="@{/cart/update-quantity}" method="post">
+                                <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <input type="hidden" name="quantity" th:value="${item.quantity + 1}">
+                                <button type="submit" class="qty-btn" aria-label="Artır">+</button>
                         </form>
                     </div>
 
@@ -127,14 +121,14 @@
     </div>
 
     <!-- ORDER SUMMARY -->
-    <div th:if="${items != null and !#lists.isEmpty(items)}" class="summary-box">
+    <div th:if="${cart?.items != null and !#lists.isEmpty(cart.items)}" class="summary-box">
         <h2 class="summary-title">Sipariş Özeti</h2>
 
         <div class="summary-row">
             <span class="summary-row-label">Ara Toplam</span>
             <span class="summary-row-value"
-                  th:text="${totalPrice != null ? #numbers.formatDecimal(totalPrice, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
-                0 TL
+                  th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
+                TL
             </span>
         </div>
 
@@ -148,7 +142,7 @@
         <div class="summary-total-row">
             <span class="summary-total-label">Toplam</span>
             <span class="summary-total-value"
-                  th:text="${totalPrice != null ? #numbers.formatDecimal(totalPrice, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
+                  th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
                 0 TL
             </span>
         </div>
