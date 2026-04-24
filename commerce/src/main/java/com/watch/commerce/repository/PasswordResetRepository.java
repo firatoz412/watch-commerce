@@ -8,7 +8,7 @@ import com.watch.commerce.model.PasswordResetToken;
 import com.watch.commerce.model.User;
 
 
-public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long>{
+public interface PasswordResetRepository extends JpaRepository<PasswordResetToken, Long>{
 
 
     Optional<PasswordResetToken> findByToken(String token);

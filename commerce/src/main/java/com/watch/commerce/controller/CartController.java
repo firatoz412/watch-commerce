@@ -1,18 +1,21 @@
 package com.watch.commerce.controller;
 
+import java.security.Principal;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.watch.commerce.model.Cart;
+import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
+import com.watch.commerce.service.user.UserService;
 
 
 @Controller
@@ -21,40 +24,48 @@ public class CartController {
 
     private final CartItemService cartItemService;
     private final CartService cartService;
+    private final UserService userService;
 
-    public CartController(CartService cartService,CartItemService cartItemService){
+    public CartController(CartService cartService,CartItemService cartItemService,UserService userService){
         this.cartService = cartService;
         this.cartItemService = cartItemService;
+        this.userService = userService;
     }
 
-    @GetMapping
-    public String getCartPage(Model model){
-        model.addAttribute("cart",null);
-        return "cart";
-    }
 
     //sepet sayfasını görüntüle
-    @GetMapping("/{cartId}")
-    public String getCartById(@PathVariable Long cartId,Model model){
-        Cart cart = cartService.getCartById(cartId);
-        model.addAttribute("cart", cart);
-        model.addAttribute("items", cart.getItems());
-        model.addAttribute("totalPrice",cart.getTotalPrice());
+    @GetMapping
+    public String getCartById(Model model,Principal principal){
+
+        if(principal == null){
+            return "redirect:/login";
+        }
+
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        if (cart == null) {
+            model.addAttribute("cart", new Cart());
+        } else {
+            model.addAttribute("cart", cart);
+        }
         return "cart";
     }   
 
     //sepete ürün ekleme
     @PostMapping("/add")
-    public String addItemToCart(@AuthenticationPrincipal UserDetails userDetails,
+    public String addItemToCart(Principal principal,
+                                @AuthenticationPrincipal UserDetails userDetails,
                                 @RequestParam(required=false) Long cartId,
                                 @RequestParam Long productId,
                                 @RequestParam(defaultValue="1") int quantity){//bu paramtereler html parametreleri ile aynı olmalı
+        if (principal == null) {
+            return "redirect:/login";
+        }
         if(cartId == null){
             Cart newCart = cartService.initializeNewCart(userDetails.getUsername());
             cartId = newCart.getId();
         }
         cartItemService.addItemToCart(cartId, productId, quantity);
-        return "redirect:/cart/" + cartId;
+        return "redirect:/cart";
 
     }
 
@@ -68,27 +79,42 @@ public class CartController {
 
     // Sepetten 1 ürün çıkar (sil butonu)
     @PostMapping("/remove")
-    public String removeItem(@RequestParam Long cartId, @RequestParam Long productId) {
-        cartItemService.removeItemFromCart(cartId, productId);
-        return "redirect:/cart/" + cartId;
+    public String removeItem(@RequestParam Long productId,Principal principal){
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByEmail(principal.getName());
+        Cart cart = cartService.getCartByUser(user);
+        
+        if(cart != null){
+            cartItemService.removeItemFromCart(cart.getId(), productId);
+        }
+        return "redirect:/cart";
     }
 
-    @PostMapping("/increase")
-    public String increaseQuantity(@RequestParam Long cartId,
-                                   @RequestParam Long productId,
-                                   @RequestParam int quantity){
-        cartItemService.updateItemQuantity(cartId, productId, quantity);
-        return "redirect:/cart/" + cartId;
+    @PostMapping("/update-quantity")
+    public String updateQuantity(@RequestParam Long productId, 
+                                 @RequestParam int quantity, 
+                                 Principal principal) {
+
+        if (principal == null){
+            return "redirect:/login";
+        }
+
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        
+        if (quantity <= 0) {
+            cartItemService.removeItemFromCart(cart.getId(), productId);
+        } else {
+            cartItemService.updateItemQuantity(cart.getId(), productId, quantity);
+        }
+        return "redirect:/cart";
     }
 
-    @PostMapping("/decrease")
-    public String decreaseQuantity(@RequestParam Long cartId,
-                                   @RequestParam Long productId,
-                                   @RequestParam int quantity){
-        cartItemService.updateItemQuantity(cartId,productId,quantity);
-        return "redirect:/cart/" +cartId;
+    
 
-    }
+   
 
   
     

@@ -1,6 +1,8 @@
 package com.watch.commerce.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -10,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,20 +38,14 @@ public class Product {
 
     private String brand;
     
-    //bir ürüne ait birden fazla resim olabilir
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    private ProductImage image;
+    @OneToMany(mappedBy = "product",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true)
+    private List<ProductImage> image = new ArrayList<>();
 
-<<<<<<< HEAD
-    private String description;
-
-
-
-=======
     @Column(length = 1000)
     private String description;
 
->>>>>>> main
 
     
 }

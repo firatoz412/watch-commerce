@@ -1,6 +1,7 @@
 package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class CartService implements ICartService {
         .orElseThrow(() -> {
             throw new ResourceNotFoundException("cart not found");
         });
-        cart.updateTotalPrice();
+        updateTotalPrice(cart);
         return cart;
     }
 
@@ -65,12 +66,14 @@ public class CartService implements ICartService {
         Cart existingCart = cartRepository.getCartByUser(user);
 
         if (existingCart != null) {//eğer userın sepeti var ise ona dön
+            updateTotalPrice(existingCart);
             return existingCart;
         }
 
         //yok ise user için yeni cart oluştur
         Cart cart = new Cart();
         cart.setUser(user);
+        cart.setItems(new HashSet<>());
         return cartRepository.save(cart);
     
     }
@@ -81,6 +84,49 @@ public class CartService implements ICartService {
         Cart cart = getCartById(cartId);
         return cart.getItems();
     }
+
+    //sepet her değiştiğinde toplam fiyat güncellensin
+    public void updateTotalPrice(Cart cart){
+         BigDecimal cartTotal = cart.getItems().stream()
+            .map(item -> item.getUnitPrice()
+                    .multiply(BigDecimal.valueOf(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        cart.setTotalPrice(cartTotal);
+    }
+
+
+     public void addItem(Cart cart,CartItem item){
+        if(cart == null || item == null){
+            return;
+        }
+        cart.getItems().add(item);
+        item.setCart(cart);
+        updateTotalPrice(cart);
+        cartRepository.save(cart);
+    }
+
+
+    public void removeItem(Cart cart,CartItem item){
+        if(cart == null || item == null){
+            return;
+        }
+        cart.getItems().remove(item);
+        item.setCart(null);
+        updateTotalPrice(cart);
+        cartRepository.save(cart);
+    }
+
+    public int getTotalItemCount(Cart cart) {
+        if (cart == null || cart.getItems() == null) {
+            return 0;
+        }
+        return cart.getItems().
+        stream().
+        mapToInt(CartItem::getQuantity).
+        sum();
+    }
+
+
 
     
     

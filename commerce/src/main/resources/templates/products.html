@@ -78,12 +78,13 @@
                     </svg>
                 </button>
 
-                <img th:if="${product.image != null}"
-                     th:src="@{'/images/watches/' + ${product.image.imageUrl}}"
-                     th:alt="${product.name}">
-                <img th:if="${product.image == null}"
-                     src="/images/watches/default.jpg"
-                     alt="Görsel Yok">
+                <img th:if="${product.image != null and !product.image.isEmpty()}"
+                    th:src="@{'/images/watches/' + ${product.image[0].imageUrl}}"
+                    th:alt="${product.name}">
+
+                <img th:if="${product.image == null or product.image.isEmpty()}"
+                    src="/images/watches/default.jpg"
+                    alt="Görsel Yok">
 
                 <a th:href="@{'/products/' + ${product.id}}" class="card-link-overlay" aria-label="Ürün Detayı"></a>
             </div>
@@ -117,6 +118,7 @@
 
         </div>
     </div>
+    
 
     <div th:if="${#lists.isEmpty(products)}" class="empty-state">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
@@ -125,6 +127,49 @@
         <p>Aradığınız kriterlere uygun ürün bulunamadı.</p>
     </div>
 </main>
+
+<!-- Footer -->
+    <footer class="w-full primary-bg text-white">
+
+        <div class="max-w-7xl mx-auto px-4 py-12">
+
+            <div class="grid grid-cols-2 gap-8">
+
+                <div>
+                    <h3 class="font-bold mb-4">Kurumsal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:accent-green hover:underline">Hakkımızda</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-4">İletişim</h3>
+
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            0850 000 00 00
+                        </li>
+
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            info@example.com
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 text-sm">
+                <p style="text-align:center;">
+                    © 2026 Saat Mağazası. Tüm hakları saklıdır.
+                </p>
+            </div>
+
+        </div>
+
+    </footer>
 
 </body>
 </html>
