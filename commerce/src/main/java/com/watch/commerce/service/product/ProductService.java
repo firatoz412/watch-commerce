@@ -70,11 +70,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product findByNameContaining(String productName) {
-        return productRepository.findByNameContaining(productName)
-        .orElseThrow(() -> {
-            throw new ProductNotFoundException("product not found");
-        });
+    public List<Product> findByNameContaining(String productName) {
+        return productRepository.findByNameContaining(productName);
     }
 
     @Override
