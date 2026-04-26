@@ -46,7 +46,7 @@ public class AdminController{
         List<Product> products;
 
         if (brand != null && !brand.isEmpty()) {
-            products = productService.getProductsByBrand(brand);
+            products = productService.getProducts(brand);
         } else {
             products = productService.getAllProducts();
         }
@@ -112,7 +112,7 @@ public class AdminController{
                 product.getImage().add(productImage);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     productService.addProduct(product);
