@@ -1,6 +1,5 @@
 package com.watch.commerce.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,19 +29,13 @@ public class ProductController {
     
 
     @GetMapping("/products")
-    public String products(
+    public String getProducts(
         @RequestParam(required = false) String brand,
         Model model,
         @AuthenticationPrincipal UserDetails userDetails){
-        List<Product> products;
+        List<Product> products = productService.getProducts(brand);
         
-        if (brand != null && !brand.isEmpty()) {
-            products = productService.getProductsByBrand(brand);
-        } else {
-            products = productService.getAllProducts();
-        }
         Cart cart = null;
-
         if(userDetails != null){
             cart = cartService.initializeNewCart(userDetails.getUsername());
         }
@@ -56,12 +49,8 @@ public class ProductController {
     @GetMapping("/search")
     public String search(@RequestParam String name, Model model) {
 
-        List<Product> products = new ArrayList<>();
-
-        if(!name.trim().isEmpty()){
-            products = productService.findByNameContaining(name);
-        }
-
+        List<Product> products = productService.findByNameContaining(name);
+        
         model.addAttribute("products", products);
         model.addAttribute("activeBrand", null); // filtreyi temizle
 

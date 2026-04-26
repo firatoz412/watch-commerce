@@ -17,11 +17,11 @@ public interface IProductService {
 
     void deleteProduct(Long productId);
 
-    List<Product> findByBrandIgnoreCase(String brand);
-
     List<Product> findByNameContaining(String productName);
 
-    List<Product> getProductsByBrand(String brand);
+    List<Product> findByBrand(String brand);
+
+    List<Product> getProducts(String brand);
 
     
 
