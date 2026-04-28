@@ -41,18 +41,12 @@ public class AdminController{
     }
 
     @GetMapping("/admin/products")//admin sayfasında ürünleri görür
-    public String adminPanel(Model model,@RequestParam(required=false) String brand){
+    public String adminPanel(Model model,@RequestParam(required=false) String keyword){
 
-        List<Product> products;
-
-        if (brand != null && !brand.isEmpty()) {
-            products = productService.getProducts(brand);
-        } else {
-            products = productService.getAllProducts();
-        }
+        List<Product> products = productService.searchProducts(keyword);
 
         model.addAttribute("products", products);
-        model.addAttribute("activeBrand", brand); // nullable
+        model.addAttribute("activeBrand", keyword); // nullable
         model.addAttribute("adminName", "Admin"); 
         return "admin-products";
     }

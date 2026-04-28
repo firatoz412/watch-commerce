@@ -97,12 +97,17 @@
                     </span>
                     <div class="filter-group">
                         <select class="filter-select" onchange="location.href=this.value">
-                            <option value="/admin/products" th:selected="${activeBrand == null}">Tüm Markalar</option>
+                            
+                            <option th:value="@{/admin/products}" th:selected="${activeBrand == null}">
+                                Tüm Markalar
+                            </option>
+                            
                             <option th:each="b : ${ {'rolex','omega','tagheuer','seiko','tissot','breitling','cartier'} }"
-                                    th:value="@{/admin/products(brand=${b})}"
+                                    th:value="@{/admin/products(keyword=${b})}" 
                                     th:text="${#strings.capitalize(b)}"
                                     th:selected="${activeBrand == b}">
                             </option>
+
                         </select>
                     </div>
                 </div>

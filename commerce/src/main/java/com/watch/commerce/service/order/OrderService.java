@@ -50,28 +50,17 @@ public class OrderService implements IOrderService{
 
     @Transactional
     @Override
-    public Order placeOrder(User user,String firstName,String lastName,String email,
-        String phone,String address,String paymentMethod
-    ) {
+    public Order placeOrder(Order order ,User user) {
         Cart cart = cartService.getCartByUser(user);
         
         if(cart == null || cart.getItems().isEmpty()){
             throw new RuntimeException("sepet boş,sipariş oluşturulamaz.");
         }
         //sepet boş değilse yeni order oluşturalım;
-        Order order = new Order();
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());//oluşturulma zamanını al
-        order.setStatus(OrderStatus.BEKLEMEDE);
+        order.setStatus(OrderStatus.TAMAMLANDI);
         order.setTotalPrice(cart.getTotalPrice());
-
-        //formdan gelen bilgileri ayarlayalım;
-        order.setFirstName(firstName);
-        order.setLastName(lastName);
-        order.setEmail(email);
-        order.setPhone(phone);
-        order.setAddress(address);
-        order.setPaymentMethod(paymentMethod);
 
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -96,6 +85,7 @@ public class OrderService implements IOrderService{
 
         }
         order.setOrderItems(orderItems);
+        cartService.clearCart(cart.getId());
         Order savedOrder = orderRepository.save(order);
         return orderRepository.save(savedOrder);
     }
