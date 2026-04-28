@@ -31,78 +31,70 @@
 <div class="order-layout">
     <div class="forms-column">
 
-        <!-- Teslimat Bilgileri -->
-        <div class="form-section">
-            <div class="section-label">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Teslimat Bilgileri
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="firstName">Ad</label>
-                    <input type="text" id="firstName" placeholder="Adınız">
+       <form th:action="@{/payment/process}" th:object="${order}" method="post">
+    
+            <div class="form-section">
+                <div class="section-label">
+                    Teslimat Bilgileri
                 </div>
-                <div class="form-group">
-                    <label for="lastName">Soyad</label>
-                    <input type="text" id="lastName" placeholder="Soyadınız">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Ad</label>
+                        <input type="text" th:field="*{firstName}" placeholder="Adınız" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Soyad</label>
+                        <input type="text" th:field="*{lastName}" placeholder="Soyadınız" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-posta</label>
+                        <input type="email" th:field="*{email}" placeholder="ornek@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" th:field="*{phone}" placeholder="0(5XX) XXX XX XX" required>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="address">Açık Adres</label>
+                    <textarea th:field="*{address}" placeholder="Mahalle, sokak, bina no, daire no..." required></textarea>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="email">E-posta</label>
-                    <input type="email" id="email" placeholder="ornek@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="phone">Telefon</label>
-                    <input type="tel" id="phone" placeholder="0(5XX) XXX XX XX">
-                </div>
-            </div>
-            <div class="form-group full-width">
-                <label for="address">Açık Adres</label>
-                <textarea id="address" placeholder="Mahalle, sokak, bina no, daire no..."></textarea>
-            </div>
-        </div>
 
-        <!-- Ödeme Bilgileri -->
-        <div class="form-section">
-            <div class="section-label">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                    <line x1="1" y1="10" x2="23" y2="10"/>
-                </svg>
-                Ödeme Bilgileri
-            </div>
-            <div class="form-group">
-                <label for="cardName">Kart Üzerindeki İsim</label>
-                <input type="text" id="cardName" placeholder="AD SOYAD">
-            </div>
-            <div class="form-group" style="margin-top: 16px;">
-                <label for="cardNumber">Kart Numarası</label>
-                <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
-                <div class="card-icons">
-                    <span class="card-icon">VISA</span>
-                    <span class="card-icon">MC</span>
-                    <span class="card-icon">AMEX</span>
-                </div>
-            </div>
-            <div class="card-input-group" style="margin-top: 16px;">
-                <div class="form-group">
-                    <label for="expiry">Son Kullanma Tarihi</label>
-                    <input type="text" id="expiry" placeholder="AA/YY">
+            <div class="form-section">
+                <div class="section-label">
+                    Ödeme Bilgileri
                 </div>
                 <div class="form-group">
-                    <label for="cvv">CVV</label>
-                    <input type="text" id="cvv" placeholder="XXX">
+                    <label for="cardName">Kart Üzerindeki İsim</label>
+                    <input type="text" th:field="*{cardHolderName}" placeholder="AD SOYAD" required>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label for="cardNumber">Kart Numarası</label>
+                    <input type="text" th:field="*{cardNumber}" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" required>
+                </div>
+                <div class="card-input-group" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label for="expireMonth">Ay (AA)</label>
+                        <input type="text" th:field="*{expireMonth}" placeholder="01" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expireYear">Yıl (YY)</label>
+                        <input type="text" th:field="*{expireYear}" placeholder="26" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" th:field="*{cvv}" placeholder="XXX" maxlength="3" required>
+                    </div>
                 </div>
             </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="saveCard">
-                <label for="saveCard">Kart bilgilerimi sonraki alışverişlerim için kaydet</label>
-            </div>
-        </div>
+
+            <button type="submit" class="btn-checkout">
+                Siparişi Tamamla
+            </button>
+        </form>
 
         <!-- Sözleşme -->
         <div class="form-section">

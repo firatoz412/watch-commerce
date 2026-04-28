@@ -17,11 +17,7 @@ public interface IProductService {
 
     void deleteProduct(Long productId);
 
-    List<Product> findByNameContaining(String productName);
-
-    List<Product> findByBrand(String brand);
-
-    List<Product> getProducts(String brand);
+    List<Product> searchProducts(String brand);
 
     
 

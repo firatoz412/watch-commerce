@@ -51,23 +51,20 @@
             </div>
 
             <!-- Arama -->
-             <form action="/search" method="get">
-            <div class="flex-1 max-w-xl mx-8">
-                <div class="flex border border-subtle rounded bg-white">
-                    <input type="text"
-                            name = "name"
-                           placeholder="Ürün ara..."
-                           class="flex-1 px-4 py-2 outline-none rounded-l">
+            <form th:action="@{/products}" method="get">
+                <div class="flex-1 max-w-xl mx-8">
+                    <div class="flex border border-subtle rounded bg-white">
+                        <input type="text"
+                                name = "keyword"
+                                placeholder="saat veya marka ara..."
+                                class="flex-1 px-4 py-2 outline-none rounded-l">
 
-                    <button class="px-4 py-2 border-l border-subtle hover:bg-gray-50">
-                        <i data-lucide="search" class="w-5 h-5"></i>
-                            <div th:each="product : ${product}">
-                                <p th:text="${product.name}"></p>
-                            </div>
-                    </button>
+                        <button type="submit" class="px-4 py-2 border-l border-subtle hover:bg-gray-50">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
             <!-- Sağ İkonlar -->
             <div class="flex items-center gap-6">
@@ -113,13 +110,13 @@
 
             <ul class="flex items-center gap-6 text-sm">
                 <li><a th:href="@{/products}" class="text-white hover:opacity-80 hover:underline">Tüm Saatler</a></li>
-                <li><a th:href="@{/products(brand='rolex')}" class="text-white hover:opacity-80 hover:underline">Rolex</a></li>
-                <li><a th:href="@{/products(brand='omega')}" class="text-white hover:opacity-80 hover:underline">Omega</a></li>
-                <li><a th:href="@{/products(brand='tagHeuer')}" class="text-white hover:opacity-80 hover:underline">Tag Heuer</a></li>
-                <li><a th:href="@{/products(brand='breitling')}" class="text-white hover:opacity-80 hover:underline">Breitling</a></li>
-                <li><a th:href="@{/products(brand='seiko')}" class="text-white hover:opacity-80 hover:underline">Seiko</a></li>
-                <li><a th:href="@{/products(brand='tissiot')}" class="text-white hover:opacity-80 hover:underline">Tissot</a></li>
-                <li><a th:href="@{/products(brand='cartier')}" class="text-white hover:opacity-80 hover:underline">Cartier</a></li>
+                <li><a th:href="@{/products(keyword='rolex')}" class="text-white hover:opacity-80 hover:underline">Rolex</a></li>
+                <li><a th:href="@{/products(keyword='omega')}" class="text-white hover:opacity-80 hover:underline">Omega</a></li>
+                <li><a th:href="@{/products(keyword='tagHeuer')}" class="text-white hover:opacity-80 hover:underline">Tag Heuer</a></li>
+                <li><a th:href="@{/products(keyword='breitling')}" class="text-white hover:opacity-80 hover:underline">Breitling</a></li>
+                <li><a th:href="@{/products(keyword='seiko')}" class="text-white hover:opacity-80 hover:underline">Seiko</a></li>
+                <li><a th:href="@{/products(keyword='tissot')}" class="text-white hover:opacity-80 hover:underline">Tissot</a></li>
+                <li><a th:href="@{/products(keyword='cartier')}" class="text-white hover:opacity-80 hover:underline">Cartier</a></li>
 
             </ul>
 

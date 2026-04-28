@@ -30,10 +30,18 @@ public class ProductController {
 
     @GetMapping("/products")
     public String getProducts(
-        @RequestParam(required = false) String brand,
+        @RequestParam(required = false) String keyword,
         Model model,
         @AuthenticationPrincipal UserDetails userDetails){
-        List<Product> products = productService.getProducts(brand);
+        
+        List<Product> products;
+        
+        if(keyword != null && !keyword.trim().isEmpty()){
+            products = productService.searchProducts(keyword);
+        }else{
+            products = productService.getAllProducts();
+        }
+
         
         Cart cart = null;
         if(userDetails != null){
@@ -42,21 +50,10 @@ public class ProductController {
 
         model.addAttribute("cart", cart);
         model.addAttribute("products", products);
-        model.addAttribute("activeBrand", brand);
+        model.addAttribute("activeBrand", keyword);
         return "products"; 
     }
     
-    @GetMapping("/search")
-    public String search(@RequestParam String name, Model model) {
-
-        List<Product> products = productService.findByNameContaining(name);
-        
-        model.addAttribute("products", products);
-        model.addAttribute("activeBrand", null); // filtreyi temizle
-
-        return "products";
-    }
-
     //ürün detay sayfası
     @GetMapping("/products/{id}")
     public String productDetail(@PathVariable Long id, Model model) {

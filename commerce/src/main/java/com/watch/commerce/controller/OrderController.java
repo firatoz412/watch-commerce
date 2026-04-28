@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.Order;
-import com.watch.commerce.model.OrderForm;
 import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.order.OrderService;
@@ -55,25 +54,19 @@ public class OrderController {
     }
 
     @PostMapping("/order/complete")
-    public String processOrder(@ModelAttribute("orderForm") OrderForm form, 
-                               Principal principal) {
+    public String processOrder(@ModelAttribute("orderForm") Order form, 
+                               Principal principal,
+                               Model model
+                            ) {
         if (principal == null){
             return "redirect:/login";
         }
         
         User user = userService.findByEmail(principal.getName());
-        
-        // Siparişi kaydetme metodunu çağıralım ve ürünü kaydedelim
-        orderService.placeOrder(
-            user, 
-            form.getFirstName(), 
-            form.getLastName(), 
-            form.getEmail(), 
-            form.getPhone(), 
-            form.getAddress(), 
-            "CREDIT_CARD" //şimdilik sabit ödeme metodu olsun 
-        );
 
+        orderService.placeOrder(form,user);
+
+        model.addAttribute("order", new Order());
         return "redirect:/order/success";
     }
 

@@ -23,7 +23,7 @@ public class ProductService implements IProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();   
     }
-
+ 
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
@@ -61,26 +61,11 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Product> findByNameContaining(String productName) {
-        if(productName == null || productName.trim().isEmpty()){
-            return Collections.emptyList();
+    public List<Product> searchProducts(String keyword) {
+        if(keyword == null || keyword.trim().isEmpty()){
+            return productRepository.findAll();
         }
-        return productRepository.findByNameContaining(productName);
-    }
-
-    @Override
-    public List<Product> findByBrand(String brand) {
-        return productRepository.findByBrand(brand);
-    }
-
-    @Override
-    public List<Product> getProducts(String brand) {
-        
-        if(brand == null || brand.trim().isEmpty()){
-            return Collections.emptyList();
-        }
-
-        return productRepository.findByBrand(brand);
+        return productRepository.findByNameContainingIgnoreCaseOrBrandContainingIgnoreCase(keyword, keyword);
     }
 
    

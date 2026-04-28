@@ -12,8 +12,7 @@ public interface  IOrderService {
     List<Order> getUserOrders(User user);
 
     //yeni sipariş oluştur
-    Order placeOrder(User user, String firstName, String lastName, String email, 
-                      String phone, String address, String paymentMethod);
+    Order placeOrder(Order order,User user);
 
     //siparişi orderId'ye göre iptal et
     void canceleOrder(Long orderId);

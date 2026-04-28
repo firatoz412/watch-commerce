@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,6 +57,21 @@ public class Order {
 
     private String paymentMethod;
     private String transactionId;
+
+    
+    @Transient
+    private String cardHolderName;
+    @Transient
+    private String cardNumber;
+    @Transient
+    private String expireMonth;
+    @Transient
+    private String expireYear;
+    @Transient
+    private String cvv;
+    @Transient
+    private String smsCode;
+
     
 
 

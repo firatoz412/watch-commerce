@@ -51,7 +51,7 @@
             </li>
             <th:block th:each="brandName : ${ {'rolex','omega','tagheuer','seiko','tissot'} }">
                 <li>
-                    <a th:href="@{/products(brand=${brandName})}"
+                    <a th:href="@{/products(keyword=${brandName})}"
                        class="brand-link"
                        th:text="${#strings.capitalize(brandName)}"
                        th:classappend="${activeBrand == brandName} ? 'brand-active' : ''">
@@ -68,7 +68,7 @@
         <div th:each="product : ${products}" class="product-card">
 
             <div class="card-image-wrap">
-               <a th:href="@{/products(brand=${product.brand})}" class="card-badge">
+               <a th:href="@{/products(keyword=${product.brand})}" class="card-badge">
                    <span th:text="${#strings.toUpperCase(product.brand)}">MARKA</span>
                </a>
 
@@ -99,6 +99,7 @@
 
             <div class="card-footer">
                 <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" name="cartId" th:value="${cart != null ? cart.id : ''}">
                     <input type="hidden" name="productId" th:value="${product.id}">
                     <input type="hidden" name="quantity" value="1">
