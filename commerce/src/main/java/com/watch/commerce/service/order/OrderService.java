@@ -1,5 +1,6 @@
 package com.watch.commerce.service.order;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,8 @@ import com.watch.commerce.model.Product;
 import com.watch.commerce.model.User;
 import com.watch.commerce.repository.OrderRepository;
 import com.watch.commerce.repository.ProductRepository;
+import com.watch.commerce.repository.UserRepository;
+import com.watch.commerce.response.OrderResponse;
 import com.watch.commerce.service.cart.CartService;
 
 import jakarta.transaction.Transactional;
@@ -27,15 +30,18 @@ public class OrderService implements IOrderService{
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public OrderService(
         OrderRepository orderRepository,
         CartService cartService,
-        ProductRepository productRepository
+        ProductRepository productRepository,
+        UserRepository userRepository
     ){
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
 
     }
 
@@ -50,16 +56,33 @@ public class OrderService implements IOrderService{
 
     @Transactional
     @Override
-    public Order placeOrder(Order order ,User user) {
+    public OrderResponse placeOrder(Order order ,User user) {
+        OrderResponse orderResponse = new OrderResponse();
         Cart cart = cartService.getCartByUser(user);
         
+        //sepet boş olması durumunda
         if(cart == null || cart.getItems().isEmpty()){
-            throw new RuntimeException("sepet boş,sipariş oluşturulamaz.");
+            orderResponse.setSuccess(false);
+            orderResponse.setMessage("sepetiniz boş");
+            return orderResponse;
         }
+
+        BigDecimal totalPrice = cart.getTotalPrice();
+        BigDecimal userBalance = user.getBalance();
+
+        //bu kontrol = userBalance < totalPrice anlamına geliyor
+        if(userBalance.compareTo(totalPrice) <0){
+            orderResponse.setSuccess(false);
+            orderResponse.setMessage("yeterisiz bakiye.Gerekli toplam miktar " + totalPrice + " mevcut bakiyeniz " + userBalance);
+            return orderResponse;
+        }
+
+        user.setBalance(user.getBalance().subtract(totalPrice));
+        userRepository.save(user);
         //sepet boş değilse yeni order oluşturalım;
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());//oluşturulma zamanını al
-        order.setStatus(OrderStatus.TAMAMLANDI);
+        order.setStatus(OrderStatus.TESLIM_EDILDI);
         order.setTotalPrice(cart.getTotalPrice());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -86,8 +109,8 @@ public class OrderService implements IOrderService{
         }
         order.setOrderItems(orderItems);
         cartService.clearCart(cart.getId());
-        Order savedOrder = orderRepository.save(order);
-        return orderRepository.save(savedOrder);
+        orderRepository.save(order);
+        return orderResponse;
     }
 
     @Override

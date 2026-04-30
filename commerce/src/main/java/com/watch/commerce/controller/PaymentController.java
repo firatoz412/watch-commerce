@@ -67,7 +67,7 @@ public class PaymentController {
     public String paymentSucces() {
         return "payment-success";
     }
-    
+
     
 
 }

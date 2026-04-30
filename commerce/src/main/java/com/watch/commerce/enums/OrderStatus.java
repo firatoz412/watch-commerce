@@ -3,10 +3,8 @@ package com.watch.commerce.enums;
 public enum  OrderStatus {
     
 BEKLEMEDE,
-ODENDI,
+SIPARIS_ONAYLANDI,
 KARGODA,
 TESLIM_EDILDI,
 IPTAL_EDILDI,
-TAMAMLANDI
-
 }
