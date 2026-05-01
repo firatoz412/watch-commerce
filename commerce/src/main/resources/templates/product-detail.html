@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${product.name + ' | Saat Mağazası'}">Ürün Detayı | Saat Mağazası</title>
+    <title th:text="${productDto.name + ' | Saat Mağazası'}">Ürün Detayı | Saat Mağazası</title>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/Product-detail.css">
+    <link rel="stylesheet" th:href="@{/css/Product-detail.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
@@ -40,10 +40,10 @@
 <div class="breadcrumb">
     <a href="/products">Tüm Saatler</a>
     <span class="sep">/</span>
-    <a th:href="@{/products(brand=${product.brand})}"
-       th:text="${#strings.capitalize(product.brand)}">Marka</a>
+    <a th:href="@{/products(brand=${productDto.brand})}"
+       th:text="${#strings.capitalize(productDto.brand)}">Marka</a>
     <span class="sep">/</span>
-    <span class="current" th:text="${product.name}">Ürün Adı</span>
+    <span class="current" th:text="${productDto.name}">Ürün Adı</span>
 </div>
 
 <!-- ── DETAIL LAYOUT ── -->
@@ -55,18 +55,18 @@
 
             <!-- Brand tag -->
             <span class="image-brand-tag"
-                  th:text="${#strings.toUpperCase(product.brand)}">MARKA</span>
+                  th:text="${#strings.toUpperCase(productDto.brand)}">MARKA</span>
 
             <!-- Fav on image -->
             <button class="btn-fav-img" aria-label="Favorilere Ekle">
                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
 
-            <img th:if="${product.image != null and !product.image.isEmpty()}"
-                th:src="@{'/images/watches/' + ${product.image[0].imageUrl}}"
-                th:alt="${product.name}">
+            <img th:if="${productDto.images != null and !productDto.images.isEmpty()}"
+                th:src="@{'/images/watches/' + ${productDto.images[0].imageUrl}}"
+                th:alt="${productDto.name}">
 
-            <img th:if="${product.image == null or product.image.isEmpty()}"
+            <img th:if="${productDto.images == null or productDto.images.isEmpty()}"
                 src="/images/watches/default.jpg"
                 alt="Görsel Yok">
         </div>
@@ -75,22 +75,22 @@
     <!-- INFO SIDE -->
     <div class="info-side">
 
-        <p class="product-brand" th:text="${#strings.toUpperCase(product.brand)}">MARKA</p>
-        <h1 class="product-name" th:text="${product.name}">Ürün Adı</h1>
+        <p class="product-brand" th:text="${#strings.toUpperCase(productDto.brand)}">MARKA</p>
+        <h1 class="product-name" th:text="${productDto.name}">Ürün Adı</h1>
 
         <!-- Price -->
         <div class="price-block">
             <span class="price-main"
-                  th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
+                  th:text="${productDto.price != null ? #numbers.formatDecimal(productDto.price, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
                 0 TL
             </span>
             <span class="price-label">KDV Dahil</span>
         </div>
 
        <!--Description-->
-        <div class="desc-block" th:if="${product.description != null and !#strings.isEmpty(product.description)}">
+        <div class="desc-block" th:if="${productDto.description != null and !#strings.isEmpty(productDto.description)}">
             <p class="desc-label">Ürün Hakkında</p>
-            <p class="desc-text" th:text="${product.description}">Açıklama</p>
+            <p class="desc-text" th:text="${productDto.description}">Açıklama</p>
         </div> 
       
 
@@ -107,7 +107,7 @@
 
             <!-- Sepete Ekle -->
             <form th:action="@{/cart/add}" method="post">
-                <input type="hidden" name="productId" th:value="${product.id}">
+                <input type="hidden" name="productId" th:value="${productDto.id}">
                 <button type="submit" class="btn-cart-add">
                     <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     SEPETE EKLE

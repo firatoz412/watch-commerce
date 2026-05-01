@@ -1,8 +1,7 @@
 package com.watch.commerce.dto;
 
 import java.math.BigDecimal;
-
-import com.watch.commerce.model.ProductImage;
+import java.util.List;
 
 import lombok.Data;
 import lombok.Getter;
@@ -19,7 +18,8 @@ public class ProductDto {
     private BigDecimal price;
     private String category;
     private String brand;
-    private ProductImage images;
+    private String description;
+    private List<ProductImageDto> images;
     
     
 }

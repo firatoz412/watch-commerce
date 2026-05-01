@@ -78,11 +78,11 @@
                     </svg>
                 </button>
 
-                <img th:if="${product.image != null and !product.image.isEmpty()}"
-                    th:src="@{'/images/watches/' + ${product.image[0].imageUrl}}"
+                <img th:if="${product.images != null and !product.images.isEmpty()}"
+                    th:src="@{'/images/watches/' + ${product.images[0].imageUrl}}"
                     th:alt="${product.name}">
 
-                <img th:if="${product.image == null or product.image.isEmpty()}"
+                <img th:if="${product.images == null or product.images.isEmpty()}"
                     src="/images/watches/default.jpg"
                     alt="Görsel Yok">
 

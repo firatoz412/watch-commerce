@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siparişlerim | Saat Mağazası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/My-orders.css}">
+    
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">SAAT MAĞAZASI</a>
+        <nav class="header-nav">
+            <a href="/products" class="nav-link">Koleksiyon</a>
+            <a href="/cart" class="nav-link">Sepet</a>
+            <a href="/hesabim" class="nav-link">Hesabım</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;font:inherit;">Çıkış Yap</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<div class="page-header">
+    <h1 class="page-title">Siparişlerim</h1>
+    <p class="page-subtitle">Geçmiş ve aktif siparişlerinizi buradan takip edebilirsiniz</p>
+</div>
+
+<!-- ── LAYOUT ── -->
+<div class="orders-layout">
+
+    <a href="/" class="back-link">← Ana Sayfaya Dön</a>
+
+    <!-- BOŞ DURUM -->
+    <div th:if="${orders == null or orders.empty}" class="empty-state">
+        <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <h3>Henüz siparişiniz yok</h3>
+        <p>Alışverişe başlayarak ilk siparişinizi oluşturun.</p>
+        <a href="/products" class="btn-shop">Alışverişe Başla</a>
+    </div>
+
+    <!-- SİPARİŞ KARTLARI -->
+    <div th:each="order : ${orders}" class="order-card">
+
+        <!-- CARD HEADER -->
+        <div class="order-card-header">
+            <div class="order-meta">
+
+                <div class="order-meta-item">
+                    <span class="order-meta-label">Sipariş No</span>
+                    <span class="order-meta-value" th:text="'#' + ${order.id}">—</span>
+                </div>
+
+                <div class="order-meta-item">
+                    <span class="order-meta-label">Tarih</span>
+                    <span class="order-meta-value"
+                          th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy')}">—</span>
+                </div>
+
+                <div class="order-meta-item">
+                    <span class="order-meta-label">Toplam</span>
+                    <span class="order-meta-value price"
+                          th:text="${order.totalPrice} + ' TL'">—</span>
+                </div>
+
+            </div>
+
+            <!-- STATUS BADGE -->
+            <span th:switch="${order.status}">
+                <span th:case="'BEKLEMEDE'"   class="status-badge status-pending">Beklemede</span>
+                <span th:case="'SIPARIS_ONAYLANDI'" class="status-badge status-confirmed">Onaylandı</span>
+                <span th:case="'KARGODA'"   class="status-badge status-shipped">Kargoda</span>
+                <span th:case="'TESLIM_EDILDI'" class="status-badge status-delivered">Teslim Edildi</span>
+                <span th:case="'IPTAL_EDILDI'" class="status-badge status-cancelled">İptal Edildi</span>
+                <span th:case="*"           class="status-badge status-pending" th:text="${order.status}">Durum</span>
+            </span>
+        </div>
+
+        <!-- CARD BODY — ilk 2 ürünü göster -->
+        <div class="order-items">
+            <div th:each="item, iter : ${order.orderItems}"
+                 th:if="${iter.index < 2}"
+                 class="order-item">
+
+                <!-- Görsel -->
+                <div class="order-item-image">
+                    <img th:if="${item.product.image != null and !item.product.image.empty}"
+                         th:src="@{'/images/watches/' + ${item.product.image[0].imageUrl}}"
+                         th:alt="${item.product.name}">
+                    <img th:if="${item.product.image == null or item.product.image.empty}"
+                         src="/images/watches/default.jpg"
+                         alt="Görsel Yok">
+                </div>
+
+                <!-- Detay -->
+                <div class="order-item-details">
+                    <div class="order-item-brand" th:text="${item.product.brand}">Marka</div>
+                    <div class="order-item-name"  th:text="${item.product.name}">Ürün Adı</div>
+                    <div class="order-item-qty"   th:text="'Adet: ' + ${item.quantity}">Adet</div>
+                </div>
+
+                <!-- Fiyat -->
+                <div class="order-item-price"
+                     th:text="${item.product.price * item.quantity} + ' TL'">0 TL</div>
+            </div>
+        </div>
+
+        <!-- 2'den fazla ürün varsa bilgi satırı -->
+        <p th:if="${#lists.size(order.orderItems) > 2}"
+           class="order-items-more"
+           th:text="'+ ' + (${#lists.size(order.orderItems)} - 2) + ' ürün daha'">
+        </p>
+
+        <!-- CARD FOOTER -->
+        <div class="order-card-footer">
+
+            <div class="order-shipping-info">
+                Kargo: <span>Ücretsiz</span>
+                &nbsp;·&nbsp;
+                Teslimat adresi:
+                <span th:text="${order.address != null ? order.address : '—'}">—</span>
+            </div>
+
+            <div class="order-actions">
+                <!-- İptal butonu BEKLEMEDE olursa iptal edilebilir -->
+                <form th:if="${order.status == 'BEKLEMEDE'}"
+                      th:action="@{/order/cancel/{id}(id=${order.id})}"
+                      method="post"
+                      style="display:inline;">
+                    <button type="submit" class="btn-cancel">İptal Et</button>
+                </form>
+
+                <!-- Detay sayfası -->
+                <a th:href="@{/order/{id}(id=${order.id})}" class="btn-detail">Detaylar</a>
+            </div>
+
+        </div>
+    </div>
+    <!-- /th:each -->
+
+</div>
+
+</body>
+</html>

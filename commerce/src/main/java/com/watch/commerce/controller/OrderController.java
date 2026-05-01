@@ -1,6 +1,7 @@
 package com.watch.commerce.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,6 +69,18 @@ public class OrderController {
 
         model.addAttribute("order", new Order());
         return "redirect:/order/success";
+    }
+
+
+    @GetMapping("/order/my-orders")
+    public String myOrders(Model model, Principal principal) {
+        if(principal == null){
+            return "redirect:/login";
+        }
+        User user = userService.findByEmail(principal.getName());
+        List<Order> orders = orderService.getUserOrders(user);
+        model.addAttribute("orders", orders);
+        return "my-orders";
     }
 
 

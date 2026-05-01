@@ -2,22 +2,32 @@ package com.watch.commerce.service.product;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.Product;
+import com.watch.commerce.request.AddProductRequest;
 
 public interface IProductService {
 
 
-    List<Product> getAllProducts();
+    List<ProductDto> getAllProducts();
 
-    Product getProductById(Long id);
+    ProductDto getProductById(Long id);
 
-    Product addProduct(Product product);
+    ProductDto addProduct(AddProductRequest request,MultipartFile file);
 
     Product updateProduct(Product product, Long id);
 
     void deleteProduct(Long productId);
 
-    List<Product> searchProducts(String brand);
+    List<ProductDto> searchProducts(String brand);
+
+    ProductDto convertToDto(Product product);
+
+    List<ProductDto> convertToDto(List<Product> products);
+
+
 
     
 
