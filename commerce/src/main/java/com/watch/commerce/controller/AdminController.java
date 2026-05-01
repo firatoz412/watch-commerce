@@ -1,12 +1,5 @@
 package com.watch.commerce.controller;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.Product;
-import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.model.User;
+import com.watch.commerce.request.AddProductRequest;
 import com.watch.commerce.service.category.CategoryService;
 import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
@@ -43,7 +37,7 @@ public class AdminController{
     @GetMapping("/admin/products")//admin sayfasında ürünleri görür
     public String adminPanel(Model model,@RequestParam(required=false) String keyword){
 
-        List<Product> products = productService.searchProducts(keyword);
+        List<ProductDto> products = productService.searchProducts(keyword);
 
         model.addAttribute("products", products);
         model.addAttribute("activeBrand", keyword); // nullable
@@ -71,52 +65,28 @@ public class AdminController{
 
     @GetMapping("/admin/products/new")//yeni ürün ekleme formu sayfasını açar
     public String addForm(Model model){
-        model.addAttribute("product",new Product());
+        model.addAttribute("productRequest",new AddProductRequest()); 
         model.addAttribute("categories",categoryService.getAllCategories());
         return "productForm";
     }
 
 
    @PostMapping("/admin/products/add")
-   public String addNewProduct(@ModelAttribute Product product, 
+   public String addNewProduct(@ModelAttribute AddProductRequest request, 
                                 @RequestParam("productImage") MultipartFile file) {
 
-        String uploadDir = "C:/Users/firat/OneDrive/Masaüstü/commerce_final/commerce/src/main/resources/static/images/watches/";
-        
-        if (!file.isEmpty()) {
-            try {
-                //aynı isimde başka bir resim olmasın diye rastgele 36 haneli benzersiz metin üretiyoruz
-                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                Path uploadPath = Paths.get(uploadDir);
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                Path savePath = uploadPath.resolve(fileName);
-                Files.copy(file.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
-
-                ProductImage productImage = new ProductImage();
-                productImage.setImageUrl(fileName);
-                productImage.setProduct(product);  
-
-                if (product.getImage() == null) {
-                    product.setImage(new ArrayList<>());
-                }
-                product.getImage().add(productImage);
-
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
+        try {
+            productService.addProduct(request, file);
+            return "redirect:/admin/products";
+        } catch (Exception e) {
+            return "productForm"; 
         }
-    productService.addProduct(product);
-    return "redirect:/admin/products";
-} 
+    } 
 
     @GetMapping("/admin/products/edit/{productId}")//ürür formunu getir
     public String editProduct(Model model,@PathVariable Long productId){
 
-        Product product = productService.getProductById(productId);
+        ProductDto product = productService.getProductById(productId);
         model.addAttribute("product", product);
         
         return "productForm";

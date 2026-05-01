@@ -16,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    //birden fazla siparş bir userın olabilir
+    //birden fazla siparİş bir user'ın olabilir
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -58,21 +57,6 @@ public class Order {
     private String paymentMethod;
     private String transactionId;
 
-    
-    @Transient
-    private String cardHolderName;
-    @Transient
-    private String cardNumber;
-    @Transient
-    private String expireMonth;
-    @Transient
-    private String expireYear;
-    @Transient
-    private String cvv;
-    @Transient
-    private String smsCode;
-
-    
 
 
 }

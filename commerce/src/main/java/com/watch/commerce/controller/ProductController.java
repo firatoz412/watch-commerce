@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.Cart;
-import com.watch.commerce.model.Product;
 import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.product.ProductService;
 
@@ -34,7 +34,7 @@ public class ProductController {
         Model model,
         @AuthenticationPrincipal UserDetails userDetails){
         
-        List<Product> products;
+        List<ProductDto> products;
         
         if(keyword != null && !keyword.trim().isEmpty()){
             products = productService.searchProducts(keyword);
@@ -57,8 +57,8 @@ public class ProductController {
     //ürün detay sayfası
     @GetMapping("/products/{id}")
     public String productDetail(@PathVariable Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
+        ProductDto productDto = productService.getProductById(id);
+        model.addAttribute("productDto", productDto);
         return "product-detail";
     }
 

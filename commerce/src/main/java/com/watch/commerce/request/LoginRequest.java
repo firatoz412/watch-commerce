@@ -1,9 +1,8 @@
 package com.watch.commerce.request;
 
-import lombok.Getter;
-import lombok.Setter;
-@Getter
-@Setter
+import lombok.Data;
+
+@Data
 public class LoginRequest {
     private String email;
     private String password;
