@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Service;
 
+import com.watch.commerce.dto.CartDto;
+import com.watch.commerce.dto.CartItemDto;
 import com.watch.commerce.exception.ProductNotFoundException;
 import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
@@ -21,17 +23,15 @@ public class CartItemService implements ICartItemService {
     private final CartService cartService;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
 
     public CartItemService(CartRepository cartRepository,
                            ProductRepository productRepository,
                            CartService cartService,
                         UserRepository userRepository
-                        ) {
+                         ) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.cartService = cartService;
-        this.userRepository=userRepository;
     }
 
  @Override
@@ -79,7 +79,9 @@ public class CartItemService implements ICartItemService {
     @Override
     public void removeItemFromCart(Long cartId, Long productId) {
 
-        Cart cart = cartService.getCartById(cartId);
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+            ()-> new ResourceNotFoundException("cart not found.")
+        );
 
         cart.getItems().removeIf(
                 item -> item.getProduct().getId().equals(productId)
@@ -91,8 +93,9 @@ public class CartItemService implements ICartItemService {
     @Override
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
 
-        Cart cart = cartService.getCartById(cartId);
-
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+            () -> new ResourceNotFoundException("cart not found.")
+        );
         if (quantity < 0) {
             throw new IllegalArgumentException("quantity must be > 0");
         }
@@ -110,17 +113,18 @@ public class CartItemService implements ICartItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("cart item not found"));
 
         item.setQuantity(quantity);
-        item.setUnitPrice(item.getProduct().getPrice());
-        item.setTotalPrice();
+        BigDecimal unitPrice = item.getProduct().getPrice();
+        item.setUnitPrice(unitPrice);
+        item.setTotalPrice(unitPrice.multiply(new BigDecimal(item.getQuantity())));
 
         updateCartTotal(cart);
         cartRepository.save(cart);
     }
 
     @Override
-    public CartItem getCartItem(Long cartId, Long productId) {
+    public CartItemDto getCartItem(Long cartId, Long productId) {
 
-        Cart cart = cartService.getCartById(cartId);
+        CartDto cart = cartService.getCartById(cartId);
 
         return cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
@@ -135,6 +139,19 @@ public class CartItemService implements ICartItemService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         cart.setTotalPrice(totalAmount);
+    }
+
+    @Override
+    public void updateItemQuantityInCart(String email, Long productId, int quantity) {
+        Cart cart = cartService.initializeNewCart(email);
+    
+        if (quantity <= 0) {
+            removeItemFromCart(cart.getId(), productId);
+        } else {
+            updateItemQuantity(cart.getId(), productId, quantity);
+        }
+        updateCartTotal(cart);
+        cartRepository.save(cart);
     }
 }
 

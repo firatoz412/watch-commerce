@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.watch.commerce.model.Cart;
+import com.watch.commerce.dto.CartDto;
+import com.watch.commerce.dto.OrderDto;
 import com.watch.commerce.model.Order;
 import com.watch.commerce.model.User;
+import com.watch.commerce.request.OrderRequest;
 import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.order.OrderService;
 import com.watch.commerce.service.user.UserService;
@@ -40,14 +42,14 @@ public class OrderController {
         }
 
         User user = userService.findByEmail(principal.getName());
-        Cart cart = cartService.getCartByUser(user);
+        CartDto cart = cartService.getCartByUser(user);
 
         //user'ın sepeti boş ise sipariş olmaz
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/cart";
         }
 
-        model.addAttribute("order", new Order());
+        model.addAttribute("order", new OrderRequest());
         model.addAttribute("cartItems", cart.getItems());
         model.addAttribute("cartTotal", cart.getTotalPrice());
 
@@ -55,7 +57,7 @@ public class OrderController {
     }
 
     @PostMapping("/order/complete")
-    public String processOrder(@ModelAttribute("orderForm") Order form, 
+    public String processOrder(@ModelAttribute("orderForm") OrderRequest form, 
                                Principal principal,
                                Model model
                             ) {
@@ -67,7 +69,7 @@ public class OrderController {
 
         orderService.placeOrder(form,user);
 
-        model.addAttribute("order", new Order());
+        model.addAttribute("order", new Order());//order = orderDto alanları
         return "redirect:/order/success";
     }
 
@@ -78,7 +80,7 @@ public class OrderController {
             return "redirect:/login";
         }
         User user = userService.findByEmail(principal.getName());
-        List<Order> orders = orderService.getUserOrders(user);
+        List<OrderDto> orders = orderService.getUserOrders(user);
         model.addAttribute("orders", orders);
         return "my-orders";
     }

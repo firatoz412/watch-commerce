@@ -5,13 +5,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.watch.commerce.dto.CartDto;
+import com.watch.commerce.dto.CartItemDto;
+import com.watch.commerce.dto.OrderDto;
+import com.watch.commerce.dto.OrderItemDto;
 import com.watch.commerce.enums.OrderStatus;
+import com.watch.commerce.enums.PaymentMethod;
 import com.watch.commerce.exception.ResourceNotFoundException;
-import com.watch.commerce.model.Cart;
-import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.Order;
 import com.watch.commerce.model.OrderItem;
 import com.watch.commerce.model.Product;
@@ -19,6 +23,7 @@ import com.watch.commerce.model.User;
 import com.watch.commerce.repository.OrderRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.repository.UserRepository;
+import com.watch.commerce.request.OrderRequest;
 import com.watch.commerce.response.OrderResponse;
 import com.watch.commerce.service.cart.CartService;
 
@@ -46,19 +51,20 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public List<Order> getUserOrders(User user) {
+    public List<OrderDto> getUserOrders(User user) {
         if(user == null){
             //return new ArrayList<>();
             return Collections.emptyList();//bellek kulanımı için daha iyi
         }
-        return orderRepository.findByUserOrderByOrderDateDesc(user);
+        List<Order> orders =  orderRepository.findByUserOrderByOrderDateDesc(user);
+        return orders.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public OrderResponse placeOrder(Order order ,User user) {
+    public OrderResponse placeOrder(OrderRequest request ,User user) {
         OrderResponse orderResponse = new OrderResponse();
-        Cart cart = cartService.getCartByUser(user);
+        CartDto cart = cartService.getCartByUser(user);
         
         //sepet boş olması durumunda
         if(cart == null || cart.getItems().isEmpty()){
@@ -76,19 +82,29 @@ public class OrderService implements IOrderService{
             orderResponse.setMessage("yeterisiz bakiye.Gerekli toplam miktar " + totalPrice + " mevcut bakiyeniz " + userBalance);
             return orderResponse;
         }
+        
+        Order order = new Order();
+        order.setUser(user);
+        order.setFirstName(request.getFirstName());
+        order.setLastName(request.getLastName());
+        order.setEmail(request.getEmail());
+        order.setPhone(request.getPhone());
+        order.setAddress(request.getAddress());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.SIPARIS_ONAYLANDI);
+        order.setTotalPrice(totalPrice);
+        order.setPaymentMethod(PaymentMethod.KREDI_KARTI);
+        order.setTransactionId("TXNN-" +System.currentTimeMillis());//sahte id
 
         user.setBalance(user.getBalance().subtract(totalPrice));
         userRepository.save(user);
-        //sepet boş değilse yeni order oluşturalım;
-        order.setUser(user);
-        order.setOrderDate(LocalDateTime.now());//oluşturulma zamanını al
-        order.setStatus(OrderStatus.TESLIM_EDILDI);
-        order.setTotalPrice(cart.getTotalPrice());
-
+      
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for(CartItem cartItem : cart.getItems()){
-            Product product = cartItem.getProduct();
+        for(CartItemDto cartItem : cart.getItems()){
+            Product product = productRepository.findById(cartItem.getProduct().getId()).orElseThrow(
+                () -> new ResourceNotFoundException("")
+            );
             //veri tabanında gerçek stoku görmek için cartItem yerine product ile kontrol ediyoruz
             if(product.getStock() < cartItem.getQuantity()){
                 throw new ResourceNotFoundException("yetersiz stok");
@@ -99,7 +115,7 @@ public class OrderService implements IOrderService{
             productRepository.save(product);
 
             OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setProduct(product);
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setPriceAtPurchase(cartItem.getUnitPrice());
             orderItem.setOrder(order);
@@ -108,8 +124,12 @@ public class OrderService implements IOrderService{
 
         }
         order.setOrderItems(orderItems);
+        Order savedOrder = orderRepository.save(order);
         cartService.clearCart(cart.getId());
-        orderRepository.save(order);
+        
+        orderResponse.setSuccess(true);
+        orderResponse.setMessage("sipariş başarıyla oluşturuldu.");
+        orderResponse.setOrder(convertToDto(savedOrder));
         return orderResponse;
     }
 
@@ -131,6 +151,34 @@ public class OrderService implements IOrderService{
         }
         order.setStatus(OrderStatus.IPTAL_EDILDI);
         orderRepository.save(order);
+    }
+
+    //order (entity) -> orderDto
+    private OrderDto convertToDto(Order order) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(order.getId());
+        orderDto.setOrderDate(order.getOrderDate());
+        orderDto.setTotalPrice(order.getTotalPrice());
+        orderDto.setStatus(order.getStatus());
+        orderDto.setFirstName(order.getFirstName());
+        orderDto.setLastName(order.getLastName());
+        orderDto.setEmail(order.getEmail());
+        orderDto.setPhone(order.getPhone());
+        orderDto.setAddress(order.getAddress());
+
+        List<OrderItemDto> itemDtos = order.getOrderItems().stream().map(item -> {
+            OrderItemDto itemDto = new OrderItemDto();
+            itemDto.setProductId(item.getProduct().getId());
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setPriceAtPurchase(item.getPriceAtPurchase());
+            BigDecimal total = item.getPriceAtPurchase().multiply(new BigDecimal(item.getQuantity()));
+            itemDto.setTotalPrice(total);
+            return itemDto;
+        }).collect(Collectors.toList());
+
+        orderDto.setOrderItems(itemDtos);
+        return orderDto;
     }
 
 

@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-checkout">
+            <button  class="btn-checkout">
                 Siparişi Tamamla
             </button>
         </form>
@@ -120,11 +120,11 @@
             <!-- IMAGE -->
             <div class="summary-item-image">
 
-                <img th:if="${item.product.image != null and !item.product.image.empty}"
-                     th:src="@{'/images/watches/' + ${item.product.image[0].imageUrl}}"
+                <img th:if="${item.product.images != null and !item.product.images.empty}"
+                     th:src="@{'/images/watches/' + ${item.product.images[0].imageUrl}}"
                      th:alt="${item.product.name}">
 
-                <img th:if="${item.product.image == null or item.product.image.empty}"
+                <img th:if="${item.product.images == null or item.product.images.empty}"
                      src="/images/watches/default.jpg"
                      alt="Görsel Yok">
 
@@ -167,10 +167,6 @@
               th:text="${cartTotal} + ' TL'">0 TL</span>
     </div>
 
-    <!-- CHECKOUT -->
-    <button class="btn-checkout">
-        Siparişi Tamamla
-    </button>
 
     <!-- NOTE -->
     <div class="summary-note">

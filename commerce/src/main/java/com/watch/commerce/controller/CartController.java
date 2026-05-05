@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.watch.commerce.dto.CartDto;
+import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
+import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
 
 
@@ -25,28 +28,29 @@ public class CartController {
     private final CartItemService cartItemService;
     private final CartService cartService;
     private final UserService userService;
+    private final ProductService productService;
 
-    public CartController(CartService cartService,CartItemService cartItemService,UserService userService){
+    public CartController(CartService cartService,CartItemService cartItemService,UserService userService,ProductService productService){
         this.cartService = cartService;
         this.cartItemService = cartItemService;
         this.userService = userService;
+        this.productService = productService;
     }
 
 
     //sepet sayfasını görüntüle
     @GetMapping
-    public String getCartById(Model model,Principal principal){
+    public String getCart(Model model,Principal principal){
 
         if(principal == null){
             return "redirect:/login";
         }
 
-        Cart cart = cartService.initializeNewCart(principal.getName());
-        if (cart == null) {
-            model.addAttribute("cart", new Cart());
-        } else {
-            model.addAttribute("cart", cart);
-        }
+        User user = userService.findByEmail(principal.getName());
+        CartDto cart = cartService.getCartByUser(user);
+       
+        model.addAttribute("cart", cart);
+        
         return "cart";
     }   
 
@@ -54,55 +58,57 @@ public class CartController {
     @PostMapping("/add")
     public String addItemToCart(Principal principal,
                                 @AuthenticationPrincipal UserDetails userDetails,
-                                @RequestParam(required=false) Long cartId,
                                 @RequestParam Long productId,
                                 @RequestParam(defaultValue="1") int quantity){//bu paramtereler html parametreleri ile aynı olmalı
         if (principal == null) {
             return "redirect:/login";
         }
-        if(cartId == null){
-            Cart newCart = cartService.initializeNewCart(userDetails.getUsername());
-            cartId = newCart.getId();
-        }
-        cartItemService.addItemToCart(cartId, productId, quantity);
+       
+        Cart cart = cartService.initializeNewCart(userDetails.getUsername());
+        cartItemService.addItemToCart(cart.getId(), productId, quantity);
         return "redirect:/cart";
 
     }
 
     //Sepeti temizle
     @PostMapping("/clear")
-    public String clearCart(@RequestParam Long cartId){
-        cartService.clearCart(cartId);
-        return "redirect:/cart/" + cartId;
+    public String clearCart(Model model,Principal principal){
+        if(principal == null){
+            return "redirect:/login";
+        }
+       
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        cartService.clearCart(cart.getId());
+        return "redirect:/cart/";
     }
 
 
     // Sepetten 1 ürün çıkar (sil butonu)
     @PostMapping("/remove")
-    public String removeItem(@RequestParam Long productId,Principal principal){
+    public String removeItem(Model model,Principal principal,@RequestParam Long productId){
 
         if (principal == null) {
             return "redirect:/login";
         }
-        User user = userService.findByEmail(principal.getName());
-        Cart cart = cartService.getCartByUser(user);
+
+        ProductDto pId = productService.getProductById(productId);
+        model.addAttribute("prodcutId",pId);
+        Cart cart = cartService.initializeNewCart(principal.getName());
+        //cartItemService.removeItemFromCart(cart.getId(), productId); cartItem dto ya dönüştürülecek
         
-        if(cart != null){
-            cartItemService.removeItemFromCart(cart.getId(), productId);
-        }
         return "redirect:/cart";
     }
 
     @PostMapping("/update-quantity")
     public String updateQuantity(@RequestParam Long productId, 
                                  @RequestParam int quantity, 
-                                 Principal principal) {
+                                 @AuthenticationPrincipal UserDetails userDetails) {
 
-        if (principal == null){
+        if (userDetails == null){
             return "redirect:/login";
         }
-
-        Cart cart = cartService.initializeNewCart(principal.getName());
+        User user = userService.findByEmail(userDetails.getUsername());
+        CartDto cart = cartService.getCartByUser(user);
         
         if (quantity <= 0) {
             cartItemService.removeItemFromCart(cart.getId(), productId);
