@@ -59,8 +59,7 @@
 
                 <div class="order-meta-item">
                     <span class="order-meta-label">Tarih</span>
-                    <span class="order-meta-value"
-                          th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy')}">—</span>
+                    <span class="order-meta-value" th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy')}">—</span>
                 </div>
 
                 <div class="order-meta-item">
@@ -90,24 +89,25 @@
 
                 <!-- Görsel -->
                 <div class="order-item-image">
-                    <img th:if="${item.product.image != null and !item.product.image.empty}"
-                         th:src="@{'/images/watches/' + ${item.product.image[0].imageUrl}}"
-                         th:alt="${item.product.name}">
-                    <img th:if="${item.product.image == null or item.product.image.empty}"
+                    <img th:if="${item.imageUrl != null and !item.imageUrl.empty}"
+                        "@{'/th:src=images/watches/' + ${item.imageUrl}}"
+                         th:alt="${item.productName}">
+
+                    <img th:if="${item.imageUrl == null or item.imageUrl.empty}"
                          src="/images/watches/default.jpg"
                          alt="Görsel Yok">
                 </div>
 
                 <!-- Detay -->
                 <div class="order-item-details">
-                    <div class="order-item-brand" th:text="${item.product.brand}">Marka</div>
-                    <div class="order-item-name"  th:text="${item.product.name}">Ürün Adı</div>
+                    <div class="order-item-brand" th:text="${item.brand}">Marka</div>
+                    <div class="order-item-name"  th:text="${item.productName}">Ürün Adı</div>
                     <div class="order-item-qty"   th:text="'Adet: ' + ${item.quantity}">Adet</div>
                 </div>
 
                 <!-- Fiyat -->
                 <div class="order-item-price"
-                     th:text="${item.product.price * item.quantity} + ' TL'">0 TL</div>
+                     th:text="${item.priceAtPurchase * item.quantity} + ' TL'">0 TL</div>
             </div>
         </div>
 

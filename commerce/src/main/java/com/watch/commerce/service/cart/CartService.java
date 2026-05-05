@@ -2,14 +2,21 @@ package com.watch.commerce.service.cart;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.watch.commerce.dto.CartDto;
+import com.watch.commerce.dto.CartItemDto;
+import com.watch.commerce.dto.ProductDto;
+import com.watch.commerce.dto.ProductImageDto;
 import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.CartItem;
+import com.watch.commerce.model.Product;
 import com.watch.commerce.model.User;
 import com.watch.commerce.repository.CartRepository;
 import com.watch.commerce.repository.UserRepository;
@@ -28,30 +35,52 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Cart getCartById(Long cartId){
+    public CartDto getCartById(Long cartId){
         Cart cart = cartRepository.findById(cartId)
         .orElseThrow(() -> {
             throw new ResourceNotFoundException("cart not found");
         });
         updateTotalPrice(cart);
-        return cart;
+        return convertToDto(cart);
     }
 
     @Override
-    public Cart getCartByUser(User user) {
-        return cartRepository.getCartByUser(user);
+    public Cart getCartByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
+        Cart cart = cartRepository.getCartByUser(user);
+
+        if (cart == null) {
+            cart = initializeNewCart(email);
+        }
+        
+        return cart;
     }
+    @Override
+    public CartDto getCartByUser(User user) {
+        Cart cart = cartRepository.getCartByUser(user);
+        if(cart == null){
+            initializeNewCart(user.getEmail());
+        }
+        return convertToDto(cartRepository.getCartByUser(user));
+    }
+
+
+
 
     @Override
     public BigDecimal getTotalPrice(Long cartId) {
-        Cart cart = getCartById(cartId);
+        CartDto cart = getCartById(cartId);
         return cart.getTotalPrice();
 }
 
     @Override
     @Transactional
     public void clearCart(Long cartId) {
-        Cart cart = getCartById(cartId);
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+            () -> new ResourceNotFoundException("cart not found.")
+        );
         cart.getItems().clear();
         cart.setTotalPrice(BigDecimal.ZERO);
         cartRepository.save(cart);
@@ -81,7 +110,9 @@ public class CartService implements ICartService {
 
     @Override
     public Set<CartItem> getItems(Long cartId) {
-        Cart cart = getCartById(cartId);
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+        () -> new ResourceNotFoundException("cart not found")
+        );
         return cart.getItems();
     }
 
@@ -126,6 +157,52 @@ public class CartService implements ICartService {
         sum();
     }
 
+
+    public CartDto convertToDto(Cart cart) {
+        CartDto dto = new CartDto();
+
+        dto.setId(cart.getId());
+        dto.setUserId(cart.getUser().getId());
+        dto.setUserEmail(cart.getUser().getEmail());
+        dto.setTotalPrice(cart.getTotalPrice());
+
+        List<CartItemDto> itemDtos = cart.getItems().stream().map(item -> {
+            CartItemDto itemDto = new CartItemDto();
+            ProductDto productDto = new ProductDto();
+            Product product = item.getProduct();
+            
+            
+            productDto.setId(product.getId());
+            productDto.setName(product.getName());
+            productDto.setPrice(product.getPrice());
+            productDto.setCategory(product.getCategory());
+            productDto.setBrand(product.getBrand());
+            productDto.setDescription(product.getDescription());
+            
+            if(product.getImage() != null){
+                List<ProductImageDto> imageDtos = product.getImage().stream().map(
+                    img->{
+                        ProductImageDto imgDto = new ProductImageDto();
+                        imgDto.setId(img.getId());
+                        imgDto.setImageUrl(img.getImageUrl());
+                        imgDto.setProductId(product.getId());
+                        return imgDto;
+                    }
+                ).collect(Collectors.toList());
+                productDto.setImages(imageDtos);
+            }
+            
+            itemDto.setProduct(productDto);
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setUnitPrice(item.getUnitPrice());
+            itemDto.setTotalPrice(item.getTotalPrice());
+            return itemDto;
+        }).collect(Collectors.toList());
+
+        dto.setItems(itemDtos);
+        return dto;
+    }
+    
 
 
     

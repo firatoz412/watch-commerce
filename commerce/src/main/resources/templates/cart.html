@@ -60,11 +60,11 @@
             <!-- Image -->
             <div class="item-image">
 
-                <img th:if="${item.product.image != null and !item.product.image.isEmpty()}"
-                    th:src="@{'/images/watches/' + ${item.product.image[0].imageUrl}}"
-                    th:alt="${item.product.name}">
+                <img th:if="${item.product?.images != null and !item.product?.images.isEmpty()}"
+                    th:src="@{'/images/watches/' + ${item.product?.images[0].imageUrl}}"
+                    th:alt="${item.product?.name}">
 
-                <img th:if="${item.product.image == null or item.product.image.isEmpty()}"
+                <img th:if="${item.product?.images == null or item.product?.images.isEmpty()}"
                     src="/images/watches/default.jpg"
                     alt="Görsel Yok">
 
@@ -73,28 +73,28 @@
             <!-- Info -->
             <div class="item-info">
 
-                <p class="item-brand" th:text="${#strings.toUpperCase(item.product.brand)}">MARKA</p>
-                <p class="item-name" th:text="${item.product.name}">Ürün Adı</p>
+                <p class="item-brand" th:text="${#strings.toUpperCase(item.product?.brand)}">MARKA</p>
+                <p class="item-name" th:text="${item.product?.name}">Ürün Adı</p>
 
                 <div class="item-actions">
                     <!-- miktarı artış ve azalış -->
                     <div class="qty-control">
                            <form th:action="@{/cart/update-quantity}" method="post">
-                                <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <input type="hidden" name="productId" th:value="${item.product?.id}">
                                 <input type="hidden" name="quantity" th:value="${item.quantity - 1}">
                                 <button type="submit" class="qty-btn" aria-label="Azalt">−</button>
                           </form>
                           <span class="qty-value" th:text="${item.quantity}">ürün miktarını gösterir</span>
                           <form th:action="@{/cart/update-quantity}" method="post">
-                                <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <input type="hidden" name="productId" th:value="${item.product?.id}">
                                 <input type="hidden" name="quantity" th:value="${item.quantity + 1}">
                                 <button type="submit" class="qty-btn" aria-label="Artır">+</button>
                         </form>
                     </div>
 
-                    <!-- ürünü kaldı -->
-                    <form th:action="@{/cart/remove}" method="post">
-                        <input type="hidden" name="productId" th:value="${item.product.id}">
+                    <!-- ürünü kaldır -->
+                    <form th:action="@{/cart/clear}" method="post">
+                        <input type="hidden" name="productId" th:value="${item.product?.id}">
                         <button type="submit" class="btn-remove">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
@@ -108,12 +108,12 @@
             <!-- Price -->
             <div class="item-price-col">
                 <p class="item-price"
-                   th:text="${item.product.price != null ? #numbers.formatDecimal(item.product.price * item.quantity, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
+                   th:text="${item.product?.price != null ? #numbers.formatDecimal(item.product.price * item.quantity, 0, 'POINT', 0, 'POINT') + ' TL' : '0 TL'}">
                     0 TL
                 </p>
                 <p class="item-unit-price"
                    th:if="${item.quantity > 1}"
-                   th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'POINT') + ' TL / adet'}">
+                   th:text="${#numbers.formatDecimal(item.product?.price, 0, 'POINT', 0, 'POINT') + ' TL / adet'}">
                 </p>
             </div>
 

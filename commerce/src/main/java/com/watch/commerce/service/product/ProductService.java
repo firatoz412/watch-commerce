@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -134,7 +135,7 @@ public class ProductService implements IProductService {
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
-        dto.setCategory(product.getName());
+        dto.setCategory(product.getCategory());
         dto.setBrand(product.getBrand());
 
 
@@ -156,7 +157,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductDto> convertToDto(List<Product> products) {
-        return products.stream().map(this::convertToDto).toList();
+        return products.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     

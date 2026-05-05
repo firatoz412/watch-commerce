@@ -1,6 +1,6 @@
 package com.watch.commerce.service.cart;
 
-import com.watch.commerce.model.CartItem;
+import com.watch.commerce.dto.CartItemDto;
 
 public interface  ICartItemService {
     
@@ -14,8 +14,11 @@ public interface  ICartItemService {
     //sepetteki itemin miktarını(quantity) güncelleme
     void updateItemQuantity(Long cartId,Long productId,int quantity);
 
+    //sepetteki ürün miktarını güncelle
+    void updateItemQuantityInCart(String email, Long productId, int quantity);
+
     //sepetteki ürünü getirme
-    CartItem getCartItem(Long cartId,Long productId);
+    CartItemDto getCartItem(Long cartId,Long productId);
 
 
 }

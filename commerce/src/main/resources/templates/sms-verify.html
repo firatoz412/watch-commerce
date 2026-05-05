@@ -45,13 +45,16 @@
             Kodu aşağıya girerek ödemenizi onaylayın.
         </p>
 
-        <form th:action="@{/payment/verify-sms}" method="post" th:object="${order}">
+        <form th:action="@{/payment/verify-sms}" method="post" th:object="${orderRequest}">
 
             <!-- Hidden fields — değerler korundu -->
             <input type="hidden" name="generatedCode" th:value="${generatedSms}">
             <input type="hidden" th:field="*{firstName}">
             <input type="hidden" th:field="*{lastName}">
             <input type="hidden" th:field="*{totalPrice}">
+            <input type="hidden" th:field="*{email}">
+            <input type="hidden" th:field="*{phone}">
+            <input type="hidden" th:field="*{address}">
 
             <!-- Code input -->
             <div class="form-group">
