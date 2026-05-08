@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.ProductDto;
-import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
@@ -47,7 +46,7 @@ public class CartController {
         }
 
         User user = userService.findByEmail(principal.getName());
-        CartDto cart = cartService.getCartByUser(user);
+        CartDto cart = cartService.getCartByUser(user);//cart nesnedi dtodur
        
         model.addAttribute("cart", cart);
         
@@ -56,15 +55,15 @@ public class CartController {
 
     //sepete ürün ekleme
     @PostMapping("/add")
-    public String addItemToCart(Principal principal,
-                                @AuthenticationPrincipal UserDetails userDetails,
+    public String addItemToCart(@AuthenticationPrincipal UserDetails userDetails,
                                 @RequestParam Long productId,
                                 @RequestParam(defaultValue="1") int quantity){//bu paramtereler html parametreleri ile aynı olmalı
-        if (principal == null) {
+
+        if (userDetails == null) {
             return "redirect:/login";
         }
        
-        Cart cart = cartService.initializeNewCart(userDetails.getUsername());
+        CartDto cart = cartService.initializeNewCart(userDetails.getUsername());
         cartItemService.addItemToCart(cart.getId(), productId, quantity);
         return "redirect:/cart";
 
@@ -77,24 +76,23 @@ public class CartController {
             return "redirect:/login";
         }
        
-        Cart cart = cartService.initializeNewCart(principal.getName());
+        CartDto cart = cartService.initializeNewCart(principal.getName());
         cartService.clearCart(cart.getId());
         return "redirect:/cart/";
     }
 
 
-    // Sepetten 1 ürün çıkar (sil butonu)
+    // Sepetten 1 ürün çıkar (kaldır butonu)
     @PostMapping("/remove")
-    public String removeItem(Model model,Principal principal,@RequestParam Long productId){
+    public String removeItem(Principal principal,@RequestParam Long productId){
 
         if (principal == null) {
             return "redirect:/login";
         }
 
         ProductDto pId = productService.getProductById(productId);
-        model.addAttribute("prodcutId",pId);
-        Cart cart = cartService.initializeNewCart(principal.getName());
-        //cartItemService.removeItemFromCart(cart.getId(), productId); cartItem dto ya dönüştürülecek
+        cartService.initializeNewCart(principal.getName());
+        cartItemService.removeItemFromCart(principal.getName(), productId);
         
         return "redirect:/cart";
     }
@@ -107,13 +105,11 @@ public class CartController {
         if (userDetails == null){
             return "redirect:/login";
         }
-        User user = userService.findByEmail(userDetails.getUsername());
-        CartDto cart = cartService.getCartByUser(user);
-        
+        String email = userDetails.getUsername();
         if (quantity <= 0) {
-            cartItemService.removeItemFromCart(cart.getId(), productId);
+            cartItemService.removeItemFromCart(email, productId);
         } else {
-            cartItemService.updateItemQuantity(cart.getId(), productId, quantity);
+            cartItemService.updateItemQuantity(email, productId, quantity);
         }
         return "redirect:/cart";
     }
@@ -125,19 +121,3 @@ public class CartController {
   
     
 }
-
-
-// //sepete ürün ekleme
-//     @PostMapping("/add")
-//     public String addItemToCart(@AuthenticationPrincipal UserDetails userDetails,
-//                                 @RequestParam(required=false) Long cartId,
-//                                 @RequestParam Long productId,
-//                                 @RequestParam(defaultValue="1") int quantity){//bu paramtereler html parametreleri ile aynı olmalı
-//         if(cartId == null){
-//             Cart newCart = cartService.initializeNewCart(userDetails.getUsername());
-//             cartId = newCart.getId();
-//         }
-//         cartItemService.addItemToCart(userDetails.getUsername(),cartId, productId, quantity);
-//         return "redirect:/cart/" + cartId;
-
-//     }

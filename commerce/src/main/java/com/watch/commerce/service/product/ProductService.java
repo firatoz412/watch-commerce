@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.watch.commerce.dto.ProductDto;
@@ -48,6 +49,7 @@ public class ProductService implements IProductService {
         return convertToDto(product);
     }
 
+    @Transactional
     @Override
     public ProductDto addProduct(AddProductRequest request,MultipartFile file){
 
@@ -64,8 +66,7 @@ public class ProductService implements IProductService {
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> {throw new ResourceNotFoundException("kategori bulunamadı");});
         product.setCategory(category);
         
-        String uploadDir = "C:/Users/firat/OneDrive/Masaüstü/commerce_final/commerce/src/main/resources/static/images/watches/";
-        
+        String uploadDir = "C:/ecommerce/uploads/";
         if (!file.isEmpty()) {
             try {
                 //aynı isimde başka bir resim olmasın diye rastgele 36 haneli benzersiz metin üretiyoruz
@@ -137,7 +138,7 @@ public class ProductService implements IProductService {
         dto.setPrice(product.getPrice());
         dto.setCategory(product.getCategory());
         dto.setBrand(product.getBrand());
-
+        dto.setStock(product.getStock());
 
         // Resimleri Entity listesinden DTO listesine çeviriyoruz
         if (product.getImage() != null) {

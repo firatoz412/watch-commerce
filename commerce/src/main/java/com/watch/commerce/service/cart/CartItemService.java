@@ -11,6 +11,7 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Cart;
 import com.watch.commerce.model.CartItem;
 import com.watch.commerce.model.Product;
+import com.watch.commerce.model.User;
 import com.watch.commerce.repository.CartRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.repository.UserRepository;
@@ -23,6 +24,7 @@ public class CartItemService implements ICartItemService {
     private final CartService cartService;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public CartItemService(CartRepository cartRepository,
                            ProductRepository productRepository,
@@ -32,9 +34,10 @@ public class CartItemService implements ICartItemService {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.cartService = cartService;
+        this.userRepository = userRepository;
     }
 
- @Override
+    @Override
     @Transactional
     public void addItemToCart(Long cartId, Long productId, int quantity) {
       
@@ -49,7 +52,7 @@ public class CartItemService implements ICartItemService {
                 .orElseThrow(() -> new ProductNotFoundException("Ürün bulunamadı."));
 
         addOrUpdateItem(cart, product, quantity);
-        updateCartTotal(cart);
+        cartService.updateTotalPrice(cart);
         cartRepository.save(cart);
     }
 
@@ -76,32 +79,20 @@ public class CartItemService implements ICartItemService {
         newItem.setProduct(product);
         return newItem;
     }
-    @Override
-    public void removeItemFromCart(Long cartId, Long productId) {
-
-        Cart cart = cartRepository.findById(cartId).orElseThrow(
-            ()-> new ResourceNotFoundException("cart not found.")
-        );
-
-        cart.getItems().removeIf(
-                item -> item.getProduct().getId().equals(productId)
-        );
-        updateCartTotal(cart);
-        cartRepository.save(cart);
-    }
 
     @Override
-    public void updateItemQuantity(Long cartId, Long productId, int quantity) {
+    public void updateItemQuantity(String email, Long productId, int quantity) {
 
-        Cart cart = cartRepository.findById(cartId).orElseThrow(
-            () -> new ResourceNotFoundException("cart not found.")
+        User user = userRepository.findByEmail(email).orElseThrow(
+            () -> new ResourceNotFoundException("email not found")
         );
+        Cart cart = cartRepository.getCartByUser(user);
         if (quantity < 0) {
             throw new IllegalArgumentException("quantity must be > 0");
         }
 
         if (quantity == 0) {
-            removeItemFromCart(cartId, productId);
+            removeItemFromCart(user.getEmail(), productId);
             return;
         }
 
@@ -117,7 +108,7 @@ public class CartItemService implements ICartItemService {
         item.setUnitPrice(unitPrice);
         item.setTotalPrice(unitPrice.multiply(new BigDecimal(item.getQuantity())));
 
-        updateCartTotal(cart);
+        cartService.updateTotalPrice(cart);
         cartRepository.save(cart);
     }
 
@@ -132,41 +123,36 @@ public class CartItemService implements ICartItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("item not found."));
     }
 
-
-    private void updateCartTotal(Cart cart) {
-        BigDecimal totalAmount = cart.getItems().stream()
-                .map(CartItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        cart.setTotalPrice(totalAmount);
+    @Override
+    public void updateItemQuantityInCart(String email, Long productId, int quantity) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+            () -> new ResourceNotFoundException("email not found")
+        );
+        Cart cart = cartRepository.getCartByUser(user);
+    
+        if (quantity <= 0) {
+            removeItemFromCart(email, productId);
+        } else {
+            updateItemQuantity(user.getEmail(), productId, quantity);
+        }
+        cartService.updateTotalPrice(cart);
+        cartRepository.save(cart);
     }
 
     @Override
-    public void updateItemQuantityInCart(String email, Long productId, int quantity) {
-        Cart cart = cartService.initializeNewCart(email);
-    
-        if (quantity <= 0) {
-            removeItemFromCart(cart.getId(), productId);
-        } else {
-            updateItemQuantity(cart.getId(), productId, quantity);
-        }
-        updateCartTotal(cart);
-        cartRepository.save(cart);
+    @Transactional
+    public void removeItemFromCart(String email, Long productId) {
+       User user = userRepository.findByEmail(email).orElseThrow(
+        () -> new ResourceNotFoundException("email not found")
+       );
+
+       Cart cart = cartRepository.getCartByUser(user);
+       CartItem itemToRemove = cart.getItems().stream()
+            .filter(item -> item.getProduct().getId().equals(productId)).
+            findFirst().orElseThrow(() -> new ResourceNotFoundException("items not found"));
+        
+       cart.getItems().remove(itemToRemove);
+       cartService.updateTotalPrice(cart);
+       cartRepository.save(cart);
     }
 }
-
-
-//  @Override
-//     public void removeItemFromCart(String email,Long cartId, Long productId) {
-
-//         Cart cart = cartService.getCartById(cartId);
-//         User user = userRepository.findByEmail(email).orElseThrow();
-
-//         cart.getItems().removeIf(
-//                 item -> item.getProduct().getId().equals(productId)
-//         );
-
-//         cart.setUser(user);
-//         updateCartTotal(cart);
-//         cartRepository.save(cart);
-//     }

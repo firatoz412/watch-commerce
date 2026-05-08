@@ -45,27 +45,29 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Cart getCartByEmail(String email) {
+    public CartDto getCartByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
         Cart cart = cartRepository.getCartByUser(user);
 
         if (cart == null) {
-            cart = initializeNewCart(email);
+            return initializeNewCart(email);
         }
-        
-        return cart;
+        updateTotalPrice(cart);//her sepeti çağırdığımızda toplam tutarı güncelliyoruz
+        return convertToDto(cart);
     }
+
+    
     @Override
     public CartDto getCartByUser(User user) {
         Cart cart = cartRepository.getCartByUser(user);
         if(cart == null){
-            initializeNewCart(user.getEmail());
+            return initializeNewCart(user.getEmail());
         }
-        return convertToDto(cartRepository.getCartByUser(user));
+        updateTotalPrice(cart);
+        return convertToDto(cart);
     }
-
 
 
 
@@ -88,7 +90,7 @@ public class CartService implements ICartService {
 
 
     @Override
-    public Cart initializeNewCart(String email) {
+    public CartDto initializeNewCart(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
@@ -96,14 +98,15 @@ public class CartService implements ICartService {
 
         if (existingCart != null) {//eğer userın sepeti var ise ona dön
             updateTotalPrice(existingCart);
-            return existingCart;
+            return convertToDto(existingCart);
         }
 
         //yok ise user için yeni cart oluştur
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setItems(new HashSet<>());
-        return cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return convertToDto(savedCart);
     
     }
 
@@ -156,7 +159,6 @@ public class CartService implements ICartService {
         mapToInt(CartItem::getQuantity).
         sum();
     }
-
 
     public CartDto convertToDto(Cart cart) {
         CartDto dto = new CartDto();
