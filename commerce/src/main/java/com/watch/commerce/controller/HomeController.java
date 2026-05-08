@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.watch.commerce.model.Cart;
+import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.service.cart.CartService;
 
 
@@ -24,7 +24,7 @@ public class HomeController {
 public String homePage(Model model, Principal principal) {
 
     if (principal != null) {
-        Cart cart = cartService.initializeNewCart(principal.getName());
+        CartDto cart = cartService.initializeNewCart(principal.getName());
         model.addAttribute("cart", cart);
     } else {
         model.addAttribute("cart", null);

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.ProductDto;
-import com.watch.commerce.model.Cart;
 import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.product.ProductService;
 
@@ -43,12 +43,12 @@ public class ProductController {
         }
 
         
-        Cart cart = null;
+        CartDto cart = null;
         if(userDetails != null){
             cart = cartService.initializeNewCart(userDetails.getUsername());
         }
 
-        model.addAttribute("cart", cart);
+        model.addAttribute("cart", cart);//burdaki cart dtodur;
         model.addAttribute("products", products);
         model.addAttribute("activeBrand", keyword);
         return "products"; 

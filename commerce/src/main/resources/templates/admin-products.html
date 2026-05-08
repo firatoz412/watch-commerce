@@ -139,11 +139,11 @@
                             <td class="cell-id" th:text="${product.id}">1</td>
 
                             <td>
-                                <img th:if="${product.image != null and !product.image.isEmpty()}"
-                                    th:src="@{'/images/watches/' + ${product.image[0].imageUrl}}"
+                                <img th:if="${product.images != null and !product.images.isEmpty()}"
+                                    th:src="@{'/images/watches/' + ${product.images[0].imageUrl}}"
                                     style="width: 50px; height: 50px;">
 
-                                <img th:if="${product.image == null or product.image.isEmpty()}"
+                                <img th:if="${product.images == null or product.images.isEmpty()}"
                                     src="/images/default-watch.png"
                                     style="width: 50px; height: 50px;">
                             </td>

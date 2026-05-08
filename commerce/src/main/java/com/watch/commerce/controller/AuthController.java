@@ -1,5 +1,7 @@
 package com.watch.commerce.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.watch.commerce.request.RegisterRequest;
 import com.watch.commerce.service.auth.AuthService;
-
-
 
 
 
@@ -24,25 +24,37 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(Model model){
+    public String login(Principal principal){
+        if(principal != null){
+            return "redirect:/";
+        }
         return "login";
     }
 
     
     @GetMapping("/register")
-    public String register(Model model){
+    public String register(Model model,Principal principal){
+        if(principal != null){
+            return "redirect:/";
+        }
         model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }
 
 
     @PostMapping("/register")
-    public String register(@ModelAttribute RegisterRequest request, Model model) {
+    public String register(@ModelAttribute RegisterRequest request, Model model,Principal principal) {
+
+        if(principal != null){
+            return "redirect:/";
+        }
+
         try {
             authService.register(request);
             return "redirect:/login?success=true";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("registerRequest", request);
             return "register";
         }
     }

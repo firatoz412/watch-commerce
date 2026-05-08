@@ -9,10 +9,10 @@ public interface  ICartItemService {
     void addItemToCart(Long cartId,Long productId,int quantity);
 
     //sepetteki ürünü kaldırma
-    void removeItemFromCart(Long cartId,Long productId);
+    void removeItemFromCart(String email,Long productId);
 
     //sepetteki itemin miktarını(quantity) güncelleme
-    void updateItemQuantity(Long cartId,Long productId,int quantity);
+    void updateItemQuantity(String email,Long productId,int quantity);
 
     //sepetteki ürün miktarını güncelle
     void updateItemQuantityInCart(String email, Long productId, int quantity);
