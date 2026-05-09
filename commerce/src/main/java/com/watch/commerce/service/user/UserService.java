@@ -1,6 +1,8 @@
 package com.watch.commerce.service.user;
 
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,17 +31,36 @@ public class UserService implements IUserService {
 
     @Override
     public User getUser(String email) {
-        return userRepository.findByEmail(email).orElseThrow(null);
+        return userRepository.findByEmail(email)
+        .orElseThrow(()-> new ResourceNotFoundException(email + " email'e sahip bir kullanıcı bulunamadı"));
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().filter(user -> user.getRole() != null && user != null)
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
+        
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public void deleteUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new ResourceNotFoundException(userId + "'ye sahip bir kullanıcı bulunamadı")
+        );
+        userRepository.delete(user);
+
+    }
+
+    
+    public String generateRandomPhoneNumber() {
+        Random random = new Random();
+        
+        int[] prefixes = {530, 531, 532, 533, 535, 541, 542, 543, 544, 552, 553, 554, 555};
+        int prefix = prefixes[random.nextInt(prefixes.length)];
+        int remainingDigits = 1000000 + random.nextInt(9000000);
+        return "0" + prefix + remainingDigits;
     }
 
     @Override
@@ -49,15 +70,16 @@ public class UserService implements IUserService {
             throw new AnExistingEmailException("bu e-posta zaten kayıtlı");
         }
 
-        Role role = roleRepository.findByRole("USER").orElseThrow(
+        Role role = roleRepository.findByRole("ROLE_USER").orElseThrow(
             () -> new ResourceNotFoundException("rol bulunamadı.")
         );
+        String phoneNumber = generateRandomPhoneNumber();
 
         User user = new User();
         user.setFirstName(request.getFirstname());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
+        user.setPhone(phoneNumber);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
 

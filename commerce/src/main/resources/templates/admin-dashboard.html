@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/Admin-products.css">
+    <link rel="stylesheet" href="/css/Admin-dashboard.css">
+    
+
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-mark">SM</span>
+            <span class="logo-text">Admin</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a th:href="@{/admin/dashboard}" class="nav-item active">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/admin/products}" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>Ürünler</span>
+            </a>
+            <a th:href="@{/admin/users}" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Kullanıcılar</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item logout">
+                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-info">
+                    <div class="admin-avatar">A</div>
+                    <div class="admin-meta">
+                        <span class="admin-name" th:text="${adminName != null ? adminName : 'Admin'}">Admin</span>
+                        <span class="admin-role">Yönetici</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="topbar-logout">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Çıkış
+                </a>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h2>Hoş geldiniz, <span th:text="${adminName != null ? adminName : 'Admin'}">Admin</span></h2>
+                    <p>SM Admin Paneline giriş yaptınız. Tüm işlemlerinizi buradan yönetebilirsiniz.</p>
+                </div>
+                <div class="welcome-actions">
+                    <a th:href="@{/admin/products/new}" class="welcome-btn primary">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Yeni Ürün
+                    </a>
+                    <a th:href="@{/admin/products}" class="welcome-btn secondary">
+                        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                        Ürünlere Git
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+
+                <!-- Toplam Ürün -->
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Toplam Ürün</span>
+                        <div class="stat-icon icon-black">
+                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-value" th:text="${totalProducts != null ? totalProducts : 0}">0</div>
+                        <div class="stat-sub">Kayıtlı ürün</div>
+                    </div>
+                </div>
+
+                <!-- Toplam Kullanıcı -->
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Toplam Kullanıcı</span>
+                        <div class="stat-icon icon-blue">
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-value" th:text="${totalUsers != null ? totalUsers : 0}">0</div>
+                        <div class="stat-sub">Kayıtlı kullanıcı</div>
+                    </div>
+                </div>
+
+                <!-- Toplam Sipariş -->
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Toplam Sipariş</span>
+                        <div class="stat-icon icon-amber">
+                            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-value" th:text="${totalOrders != null ? totalOrders : 0}">0</div>
+                        <div class="stat-sub">Toplam sipariş</div>
+                    </div>
+                </div>
+
+                <!-- Toplam Gelir -->
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Toplam Gelir</span>
+                        <div class="stat-icon icon-green">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-value"
+                             th:text="${totalRevenue != null ? #numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'POINT') + ' ₺' : '0 ₺'}">
+                            0 ₺
+                        </div>
+                        <div class="stat-sub">Toplam gelir</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quick Links -->
+            <div class="quick-section">
+                <div class="quick-header">Hızlı Erişim</div>
+                <div class="quick-links">
+                    <a th:href="@{/admin/products/new}" class="quick-link">
+                        <div class="quick-link-icon">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </div>
+                        <div class="quick-link-text">
+                            <strong>Yeni Ürün Ekle</strong>
+                            <span>Yeni ürün kaydı oluştur</span>
+                        </div>
+                    </a>
+                    <a th:href="@{/admin/products}" class="quick-link">
+                        <div class="quick-link-icon">
+                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        </div>
+                        <div class="quick-link-text">
+                            <strong>Ürünleri Yönet</strong>
+                            <span>Ürün listesini görüntüle</span>
+                        </div>
+                    </a>
+                    <a th:href="@{/admin/users}" class="quick-link">
+                        <div class="quick-link-icon">
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="quick-link-text">
+                            <strong>Kullanıcıları Yönet</strong>
+                            <span>Kullanıcı listesini görüntüle</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

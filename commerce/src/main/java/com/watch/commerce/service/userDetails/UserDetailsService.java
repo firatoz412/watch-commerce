@@ -8,6 +8,7 @@ import com.watch.commerce.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserDetailsService implements IUserDetailsService{
@@ -23,7 +24,7 @@ public class UserDetailsService implements IUserDetailsService{
         return org.springframework.security.core.userdetails.User
             .withUsername(user.getEmail())
             .password(user.getPassword())
-            .roles(user.getRole().getRole()) // "ROLE_USER" veya "ROLE_ADMIN"
+            .authorities(user.getRole().getRole())// "ROLE_USER" veya "ROLE_ADMIN"
             .build();
     }
 

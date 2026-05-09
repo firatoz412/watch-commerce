@@ -60,11 +60,13 @@
             <!-- Image -->
             <div class="item-image">
 
-                <img th:if="${item.product?.images != null and !item.product?.images.isEmpty()}"
-                    th:src="@{'/images/watches/' + ${item.product?.images[0].imageUrl}}"
-                    th:alt="${item.product?.name}">
+                <!-- Eğer ürünün resmi varsa göster -->
+                <img th:if="${item.product?.image != null}"
+                    th:src="@{'/images/watches/' + ${item.product.image.imageUrl}}"
+                    th:alt="${item.product.name}">
 
-                <img th:if="${item.product?.images == null or item.product?.images.isEmpty()}"
+                <!-- Eğer ürünün resmi yoksa varsayılan görseli göster -->
+                <img th:if="${item.product?.image == null}"
                     src="/images/watches/default.jpg"
                     alt="Görsel Yok">
 
@@ -93,7 +95,7 @@
                     </div>
 
                     <!-- ürünü kaldır -->
-                    <form th:action="@{/cart/clear}" method="post">
+                    <form th:action="@{/cart/remove}" method="post">
                         <input type="hidden" name="productId" th:value="${item.product?.id}">
                         <button type="submit" class="btn-remove">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round">

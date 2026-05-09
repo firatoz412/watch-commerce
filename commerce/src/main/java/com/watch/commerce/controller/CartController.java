@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.watch.commerce.dto.CartDto;
-import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.User;
 import com.watch.commerce.service.cart.CartItemService;
 import com.watch.commerce.service.cart.CartService;
-import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
 
 
@@ -27,13 +25,11 @@ public class CartController {
     private final CartItemService cartItemService;
     private final CartService cartService;
     private final UserService userService;
-    private final ProductService productService;
 
-    public CartController(CartService cartService,CartItemService cartItemService,UserService userService,ProductService productService){
+    public CartController(CartService cartService,CartItemService cartItemService,UserService userService){
         this.cartService = cartService;
         this.cartItemService = cartItemService;
         this.userService = userService;
-        this.productService = productService;
     }
 
 
@@ -45,7 +41,7 @@ public class CartController {
             return "redirect:/login";
         }
 
-        User user = userService.findByEmail(principal.getName());
+        User user = userService.getUser(principal.getName());
         CartDto cart = cartService.getCartByUser(user);//cart nesnedi dtodur
        
         model.addAttribute("cart", cart);
@@ -63,7 +59,7 @@ public class CartController {
             return "redirect:/login";
         }
        
-        CartDto cart = cartService.initializeNewCart(userDetails.getUsername());
+        CartDto cart = cartService.getOrCreate(userDetails.getUsername());
         cartItemService.addItemToCart(cart.getId(), productId, quantity);
         return "redirect:/cart";
 
@@ -76,7 +72,7 @@ public class CartController {
             return "redirect:/login";
         }
        
-        CartDto cart = cartService.initializeNewCart(principal.getName());
+        CartDto cart = cartService.getOrCreate(principal.getName());
         cartService.clearCart(cart.getId());
         return "redirect:/cart/";
     }
@@ -90,8 +86,7 @@ public class CartController {
             return "redirect:/login";
         }
 
-        ProductDto pId = productService.getProductById(productId);
-        cartService.initializeNewCart(principal.getName());
+        cartService.getOrCreate(principal.getName());
         cartItemService.removeItemFromCart(principal.getName(), productId);
         
         return "redirect:/cart";
@@ -114,10 +109,4 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    
-
-   
-
-  
-    
 }

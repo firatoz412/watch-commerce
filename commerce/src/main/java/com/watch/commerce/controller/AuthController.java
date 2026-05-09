@@ -31,6 +31,13 @@ public class AuthController {
         return "login";
     }
 
+    @GetMapping("/logout")
+    public String logout(Principal principal){
+        if(principal != null){
+            return "redirect:/";
+        }
+        return "home";
+    }
     
     @GetMapping("/register")
     public String register(Model model,Principal principal){

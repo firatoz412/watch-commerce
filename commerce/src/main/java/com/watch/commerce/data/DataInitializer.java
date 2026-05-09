@@ -24,23 +24,23 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (roleRepository.findByRole("USER").isEmpty()) {
+        if (roleRepository.findByRole("ROLE_USER").isEmpty()) {
             Role userRole = new Role();
-            userRole.setRole("USER");
+            userRole.setRole("ROLE_USER");
             roleRepository.save(userRole);
         }
-        if (roleRepository.findByRole("ADMIN").isEmpty()) {
+        if (roleRepository.findByRole("ROLE_ADMIN").isEmpty()) {
             Role adminRole = new Role();
-            adminRole.setRole("ADMIN");
+            adminRole.setRole("ROLE_ADMIN");
             roleRepository.save(adminRole);
         }
         if (userRepository.findByEmail("admin@saatmagasasi.com").isEmpty()) {
-            Role adminRole = roleRepository.findByRole("ADMIN").get();
+            Role adminRole = roleRepository.findByRole("ROLE_ADMIN").get();
             User admin = new User();
             admin.setFirstName("Admin");
             admin.setLastName("User");
             admin.setEmail("admin@saatmagasasi.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword(passwordEncoder.encode("12345678"));
             admin.setRole(adminRole);
             userRepository.save(admin);
         }

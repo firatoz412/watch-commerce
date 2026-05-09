@@ -26,7 +26,7 @@ public interface ICartService {
     BigDecimal getTotalPrice(Long cartId);
 
     //bu metot ile sepete yeni bir cart oluşturuyoruz.
-    CartDto initializeNewCart(String username);
+    CartDto getOrCreate(String username);
 
     //carttaki itemleri al
     Set<CartItem> getItems(Long cartId);

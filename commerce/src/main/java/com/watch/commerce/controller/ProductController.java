@@ -45,7 +45,7 @@ public class ProductController {
         
         CartDto cart = null;
         if(userDetails != null){
-            cart = cartService.initializeNewCart(userDetails.getUsername());
+            cart = cartService.getOrCreate(userDetails.getUsername());
         }
 
         model.addAttribute("cart", cart);//burdaki cart dtodur;

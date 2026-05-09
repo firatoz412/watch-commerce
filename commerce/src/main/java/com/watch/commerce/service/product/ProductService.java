@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +21,8 @@ import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.CategoryRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.request.AddProductRequest;
+import com.watch.commerce.request.UpdateProductRequest;
+import com.watch.commerce.service.image.ImageService;
 
 
 
@@ -30,10 +31,12 @@ public class ProductService implements IProductService {
     
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageService imageService;
 
-    public ProductService(ProductRepository productRepository,CategoryRepository categoryRepository){
+    public ProductService(ProductRepository productRepository,CategoryRepository categoryRepository,ImageService imageService){
         this.productRepository = productRepository; 
         this.categoryRepository = categoryRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -82,12 +85,9 @@ public class ProductService implements IProductService {
 
                 ProductImage productImage = new ProductImage();
                 productImage.setImageUrl(fileName);
-                productImage.setProduct(product);  
-
-                if (product.getImage() == null) {
-                    product.setImage(new ArrayList<>());
-                }
-                product.getImage().add(productImage);
+                
+                productImage.setProduct(product); 
+                product.setImage(productImage);
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -97,18 +97,29 @@ public class ProductService implements IProductService {
         return convertToDto(savedProduct);
     }
 
+    
+
     @Override
-    public Product updateProduct(Product product, Long productId) {
+    @Transactional
+    public ProductDto updateProduct(UpdateProductRequest request, Long productId) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("product not found"));
 
-        existingProduct.setName(product.getName());
-        existingProduct.setPrice(product.getPrice());
-        existingProduct.setCategory(product.getCategory());
-        existingProduct.setBrand(product.getBrand());
-        existingProduct.setImage(product.getImage());
-
-        return productRepository.save(existingProduct);
+        existingProduct.setName(request.getProductName());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setStock(request.getStock());
+        if (request.getCategory() != null) {
+            existingProduct.setCategory(request.getCategory());
+        }else{
+            Category category = new Category();
+            category.setName("watch");
+        }
+        if (request.getProductImage() != null && !request.getProductImage().isEmpty()) {
+            imageService.saveImage(request.getProductImage(),existingProduct);
+        }
+        Product updatedProduct = productRepository.save(existingProduct);
+        return convertToDto(updatedProduct);
     }
 
     @Override
@@ -142,14 +153,10 @@ public class ProductService implements IProductService {
 
         // Resimleri Entity listesinden DTO listesine çeviriyoruz
         if (product.getImage() != null) {
-            List<ProductImageDto> imageDtos = product.getImage().stream()
-                .map(img -> {
-                    ProductImageDto imgDto = new ProductImageDto();
-                    imgDto.setId(img.getId());
-                    imgDto.setImageUrl(img.getImageUrl());
-                    return imgDto;
-                }).toList();
-            dto.setImages(imageDtos);
+           ProductImageDto imageDto = new ProductImageDto();
+            imageDto.setId(product.getImage().getId());
+            imageDto.setImageUrl(product.getImage().getImageUrl());
+            dto.setImage(imageDto);
         }
         
         return dto;

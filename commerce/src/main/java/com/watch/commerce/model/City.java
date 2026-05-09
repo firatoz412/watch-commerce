@@ -20,7 +20,7 @@ public class City {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-    private String cittyName;
+    private String cityName;
     private Integer plateCode;
     
 

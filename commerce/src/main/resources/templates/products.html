@@ -78,11 +78,13 @@
                     </svg>
                 </button>
 
-                <img th:if="${product.images != null and !product.images.isEmpty()}"
-                    th:src="@{'/images/watches/' + ${product.images[0].imageUrl}}"
+                <!-- Eğer resim varsa göster -->
+                <img th:if="${product.image != null}"
+                    th:src="@{'/images/watches/' + ${product.image.imageUrl}}"
                     th:alt="${product.name}">
 
-                <img th:if="${product.images == null or product.images.isEmpty()}"
+                <!-- Eğer resim yoksa default resmi göster -->
+                <img th:if="${product.image == null}"
                     src="/images/watches/default.jpg"
                     alt="Görsel Yok">
 

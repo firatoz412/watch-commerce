@@ -89,11 +89,11 @@
 
                 <!-- Görsel -->
                 <div class="order-item-image">
-                    <img th:if="${item.imageUrl != null and !item.imageUrl.empty}"
+                    <img th:if="${item.imageUrl != null}"
                         "@{'/th:src=images/watches/' + ${item.imageUrl}}"
                          th:alt="${item.productName}">
 
-                    <img th:if="${item.imageUrl == null or item.imageUrl.empty}"
+                    <img th:if="${item.imageUrl == null}"
                          src="/images/watches/default.jpg"
                          alt="Görsel Yok">
                 </div>

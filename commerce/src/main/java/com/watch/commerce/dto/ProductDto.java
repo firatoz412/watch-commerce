@@ -1,7 +1,6 @@
 package com.watch.commerce.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.watch.commerce.model.Category;
 
@@ -18,7 +17,7 @@ public class ProductDto {
     private Category category;
     private String brand;
     private String description;
-    private List<ProductImageDto> images;
+    private ProductImageDto image;
     
     
 }

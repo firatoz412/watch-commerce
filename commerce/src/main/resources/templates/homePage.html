@@ -16,7 +16,6 @@
 </head>
 
 <body class="h-full overflow-auto">
-
 <div id="app-wrapper" class="w-full min-h-[150%]">
 
     <!-- ÜST BAR -->
@@ -28,7 +27,8 @@
                     <a href="/login" class="hover:accent-green hover:underline">Giriş Yap</a>
                     <a href="/register" class="hover:accent-green hover:underline ml-4">Kayıt Ol</a>
                 </div>
-                <div sec:authorize="isAuthenticated()" class="flex gap-4 items-center">
+                <div sec:authorize="isAuthenticated()" class="flex gap-4 items-center text-align:center">
+                    <div id="notification-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;"></div>
                     <a th:href="@{/hesabim}" class="hover:accent-green hover:underline">Hesabım</a>
                     <form th:action="@{/logout}" method="post" style="display:inline;">
                         <button type="submit" class="hover:accent-green hover:underline" style="background:none;border:none;cursor:pointer;font:inherit;color:inherit;">Çıkış Yap</button>
@@ -232,7 +232,36 @@
 
 </div>
 
+<script sec:authorize="isAuthenticated()">
+    window.onload = function() {
+        if (!sessionStorage.getItem('loginNotificationShown')) {
+            showNotification("Giriş Başarılı!");
+            sessionStorage.setItem('loginNotificationShown', 'true');
+        }
+    };
+</script>
+
 <script>
+
+    function showNotification(message) {
+        const container = document.getElementById('notification-container');
+        
+        const notification = document.createElement('div');
+        notification.className = 'toast-message';
+        notification.innerText = message;
+        
+        container.appendChild(notification);
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }, 2000);
+    }
 
 
 if (window.elementSdk) {
