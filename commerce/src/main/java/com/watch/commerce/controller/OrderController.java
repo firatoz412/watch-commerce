@@ -41,7 +41,7 @@ public class OrderController {
             return "redirect:/login";
         }
 
-        User user = userService.findByEmail(principal.getName());
+        User user = userService.getUser(principal.getName());
         CartDto cart = cartService.getCartByUser(user);
 
         //user'ın sepeti boş ise sipariş olmaz
@@ -65,7 +65,7 @@ public class OrderController {
             return "redirect:/login";
         }
         
-        User user = userService.findByEmail(principal.getName());
+        User user = userService.getUser(principal.getName());
 
         orderService.placeOrder(form,user);
 
@@ -79,7 +79,7 @@ public class OrderController {
         if(principal == null){
             return "redirect:/login";
         }
-        User user = userService.findByEmail(principal.getName());
+        User user = userService.getUser(principal.getName());
         List<OrderDto> orders = orderService.getUserOrders(user);
         model.addAttribute("orders", orders);
         return "my-orders";

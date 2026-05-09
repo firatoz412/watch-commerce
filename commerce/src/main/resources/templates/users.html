@@ -1,11 +1,233 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>users</title>
+    <title>Admin | Kullanıcılar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin-products.css">
+    <style>
+        .badge-role {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            white-space: nowrap;
+        }
+        .badge-role.admin {
+            background: #0f0f0f;
+            color: #ffffff;
+        }
+        .badge-role.user {
+            background: var(--gray-10);
+            border: 1px solid var(--border);
+            color: var(--black);
+        }
+        .cell-email { font-size: 12px; color: var(--gray-60); }
+        .cell-phone { font-size: 12px; color: var(--gray-60); }
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gray-10);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--black);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .user-name-col {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-name-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--black);
+        }
+    </style>
 </head>
 <body>
-    <h6>kullancııc listesi</h6>
+
+<div class="admin-layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-mark">SM</span>
+            <span class="logo-text">Admin</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a th:href="@{/admin/dashboard}" class="nav-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/admin/products}" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>Ürünler</span>
+            </a>
+            <a th:href="@{/admin/users}" class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Kullanıcılar</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item logout">
+                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Kullanıcı Yönetimi</h1>
+                <span class="page-sub">Kayıtlı kullanıcıları görüntüle ve yönet</span>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-info">
+                    <div class="admin-avatar">A</div>
+                    <div class="admin-meta">
+                        <span class="admin-name" th:text="${adminName != null ? adminName : 'Admin'}">Admin</span>
+                        <span class="admin-role">Yönetici</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="topbar-logout">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Çıkış
+                </a>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <div class="action-bar">
+                <div class="search-wrap">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Kullanıcı ara..." class="search-input" id="searchInput" onkeyup="filterTable()">
+                </div>
+                <div class="filter-group">
+                    <select class="filter-select" onchange="filterByRole(this.value)">
+                        <option value="all">Tüm Roller</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">Kullanıcı</option>
+                    </select>
+                </div>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                <span th:text="${successMessage}">İşlem başarılı.</span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span th:text="${errorMessage}">Bir hata oluştu.</span>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <span class="table-count">
+                        Toplam <strong th:text="${#lists.size(users)}">0</strong> kullanıcı
+                    </span>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="product-table" id="userTable">
+                        <!-- EKSİK OLAN BAŞLIK KISMI BURASI -->
+                        <thead>
+                            <tr>
+                                <th style="width:52px;">#</th>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Telefon</th>
+                                <th>Rol</th>
+                                <th style="width:80px;">İşlemler</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            <!-- Liste boşsa mesaj göster -->
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="6" class="empty-row">
+                                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                    <p>Hiç kullanıcı bulunamadı.</p>
+                                </td>
+                            </tr>
+
+                            <!-- Kullanıcı Döngüsü -->
+                            <tr th:each="user, stat : ${users}"
+                                th:classappend="${stat.odd} ? 'row-odd' : ''"
+                                th:attr="data-role=${user.roleName != null ? #strings.toLowerCase(user.roleName).replace('role_','') : 'user'}">
+
+                                <td class="cell-id" th:text="${user.id}">1</td>
+
+                                <td>
+                                    <div class="user-name-col">
+                                        <div class="avatar-circle"
+                                            th:text="${user.firstName != null and !#strings.isEmpty(user.firstName) ? #strings.substring(user.firstName,0,1) : '?'}">
+                                        </div>
+                                        <span class="user-name-text" th:text="${user.firstName + ' ' + user.lastName}">Ad Soyad</span>
+                                    </div>
+                                </td>
+
+                                <td class="cell-email" th:text="${user.email}">email@ornek.com</td>
+
+                                <td class="cell-phone" th:text="${user.phone != null and !#strings.isEmpty(user.phone) ? user.phone : '—'}">—</td>
+
+                                <td>
+                                    <span class="badge-role"
+                                        th:classappend="${user.roleName != null and #strings.contains(#strings.toUpperCase(user.roleName), 'ADMIN')} ? 'admin' : 'user'"
+                                        th:text="${user.roleName != null ? #strings.replace(#strings.toUpperCase(user.roleName), 'ROLE_', '') : 'USER'}">
+                                        USER
+                                    </span>
+                                </td>
+
+                                <td class="cell-actions">
+                                    <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post"
+                                        onsubmit="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <button type="submit" class="btn-action btn-delete" title="Sil">
+                                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    function filterTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#userTable tbody tr[data-role]');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    function filterByRole(role) {
+        const rows = document.querySelectorAll('#userTable tbody tr[data-role]');
+        rows.forEach(row => {
+            row.style.display = (role === 'all' || row.dataset.role === role) ? '' : 'none';
+        });
+    }
+</script>
+
 </body>
 </html>

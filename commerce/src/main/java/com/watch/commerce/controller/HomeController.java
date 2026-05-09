@@ -24,7 +24,7 @@ public class HomeController {
 public String homePage(Model model, Principal principal) {
 
     if (principal != null) {
-        CartDto cart = cartService.initializeNewCart(principal.getName());
+        CartDto cart = cartService.getOrCreate(principal.getName());
         model.addAttribute("cart", cart);
     } else {
         model.addAttribute("cart", null);

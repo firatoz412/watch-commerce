@@ -29,6 +29,9 @@ public class PasswordResetService {
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı."));
 
+        tokenRepository.deleteByUser(user);
+        tokenRepository.flush();
+        
         String token = UUID.randomUUID().toString();
         PasswordResetToken myToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(15));
         tokenRepository.save(myToken);
@@ -54,7 +57,6 @@ public class PasswordResetService {
         User user = resetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-
         tokenRepository.deleteByUser(user); // Güvenlik için token'ı tek kullanımlık yapıyoruz
     }
 }

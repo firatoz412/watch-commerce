@@ -52,7 +52,7 @@ public class CartService implements ICartService {
         Cart cart = cartRepository.getCartByUser(user);
 
         if (cart == null) {
-            return initializeNewCart(email);
+            return getOrCreate(email);
         }
         updateTotalPrice(cart);//her sepeti çağırdığımızda toplam tutarı güncelliyoruz
         return convertToDto(cart);
@@ -63,7 +63,7 @@ public class CartService implements ICartService {
     public CartDto getCartByUser(User user) {
         Cart cart = cartRepository.getCartByUser(user);
         if(cart == null){
-            return initializeNewCart(user.getEmail());
+            return getOrCreate(user.getEmail());
         }
         updateTotalPrice(cart);
         return convertToDto(cart);
@@ -90,7 +90,7 @@ public class CartService implements ICartService {
 
 
     @Override
-    public CartDto initializeNewCart(String email) {
+    public CartDto getOrCreate(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
@@ -180,18 +180,13 @@ public class CartService implements ICartService {
             productDto.setCategory(product.getCategory());
             productDto.setBrand(product.getBrand());
             productDto.setDescription(product.getDescription());
-            
-            if(product.getImage() != null){
-                List<ProductImageDto> imageDtos = product.getImage().stream().map(
-                    img->{
-                        ProductImageDto imgDto = new ProductImageDto();
-                        imgDto.setId(img.getId());
-                        imgDto.setImageUrl(img.getImageUrl());
-                        imgDto.setProductId(product.getId());
-                        return imgDto;
-                    }
-                ).collect(Collectors.toList());
-                productDto.setImages(imageDtos);
+
+            if (product.getImage() != null) {
+                ProductImageDto imageDto = new ProductImageDto();
+                imageDto.setId(product.getImage().getId());
+                imageDto.setImageUrl(product.getImage().getImageUrl());
+                
+                productDto.setImage(imageDto);
             }
             
             itemDto.setProduct(productDto);

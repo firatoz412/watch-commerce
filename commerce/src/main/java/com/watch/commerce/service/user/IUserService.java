@@ -13,12 +13,11 @@ public interface IUserService {
     
     User getUser(String email);
 
-    User findByEmail(String email);
-
-    List<User> getAllUsers();
+    List<UserDto> getAllUsers();
 
     UserDto createUser(CreateUserRequest request);
 
+    void deleteUser(Long userId);
     
 
 }

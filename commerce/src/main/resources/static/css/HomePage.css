@@ -6,3 +6,22 @@
     .accent-bg { background-color: #000000; }
     .accent-hover:hover { background-color: #059669; }
     .border-subtle { border-color: #e5e7eb; }
+
+    .toast-message {
+    background-color: #10b981;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(-20px);
+}
+
+.toast-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}

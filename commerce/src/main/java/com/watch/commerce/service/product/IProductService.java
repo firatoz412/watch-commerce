@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.request.AddProductRequest;
+import com.watch.commerce.request.UpdateProductRequest;
 
 public interface IProductService {
 
@@ -17,7 +18,7 @@ public interface IProductService {
 
     ProductDto addProduct(AddProductRequest request,MultipartFile file);
 
-    Product updateProduct(Product product, Long id);
+    ProductDto updateProduct(UpdateProductRequest request, Long id);
 
     void deleteProduct(Long productId);
 

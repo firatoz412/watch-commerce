@@ -1,6 +1,5 @@
 package com.watch.commerce.request;
 import java.math.BigDecimal;
-import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +28,7 @@ public class AddProductRequest {
     @NotNull(message = "Ürün için bir kategori seçilmelidir.")
     private Long categoryId;
     
-    private List<String> imageUrls;
+    private String imageUrl;
 
     
 }

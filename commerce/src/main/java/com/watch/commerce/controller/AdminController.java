@@ -1,4 +1,6 @@
 package com.watch.commerce.controller;
+import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -11,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.watch.commerce.dto.ProductDto;
-import com.watch.commerce.model.Product;
-import com.watch.commerce.model.User;
+import com.watch.commerce.dto.UserDto;
 import com.watch.commerce.request.AddProductRequest;
+import com.watch.commerce.request.UpdateProductRequest;
 import com.watch.commerce.service.category.CategoryService;
 import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
@@ -46,17 +48,42 @@ public class AdminController{
     }
 
 
+    //admin dashoard sayfasını açar
     @GetMapping("/admin/dashboard")
-    public String adminDashboard(){
-        return "dashboard";
+    public String adminDashboard(Model model){
+        model.addAttribute("totalProducts", productService.getAllProducts().size());
+        model.addAttribute("totalUsers", userService.getAllUsers().size());
+        model.addAttribute("totalOrders", 0);   // sipariş servisin hazır olunca
+        model.addAttribute("totalRevenue", BigDecimal.ZERO); // gelir servisin hazır olunca
+        model.addAttribute("adminName", "Admin");
+        return "Admin-dashboard";
     }
 
+    //admin users listesini görür
     @GetMapping("/admin/users")
-    public String users(Model model){
-        List<User> users = userService.getAllUsers();
+    public String users(Model model,Principal principal){
+
+        List<UserDto> users = userService.getAllUsers();
         model.addAttribute("users", users);
+
+        if (principal != null) {
+            model.addAttribute("adminName", principal.getName());
+        }
+
         return "users";
     }
+
+     //user
+    @PostMapping("/admin/users/delete/{userId}")
+    public String deleteUser(Model model,Principal principal,@PathVariable Long userId){
+
+        if(principal == null){
+            return "redirect:/login";
+        }
+        userService.deleteUser(userId);
+        return "users";
+    }
+
 
     @GetMapping("/admin/list")//ürünleri listele
     public String listProducts(){
@@ -88,13 +115,15 @@ public class AdminController{
 
         ProductDto product = productService.getProductById(productId);
         model.addAttribute("product", product);
+        model.addAttribute("categories", categoryService.getAllCategories()); // bunu ekle
+        model.addAttribute("adminName", "Admin");
         
         return "productForm";
     }
 
     @PostMapping("/admin/products/update/{productId}")//ürünü güncelle
-    public String updateProduct(@ModelAttribute Product product,@PathVariable Long productId){
-        productService.updateProduct(product, productId);
+    public String updateProduct(@ModelAttribute UpdateProductRequest product,@PathVariable Long productId){
+        productService.updateProduct(product, productId);//product = request
         return "redirect:/admin/products";
     }
 
@@ -105,4 +134,5 @@ public class AdminController{
     }
 
 
+    
 }

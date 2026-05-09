@@ -53,9 +53,11 @@ public class PaymentController {
         }
         if(request.getPhone() != null) {
             request.setPhone(request.getPhone().replaceAll("[^0-9]", ""));
+        }else{
+            request.setPhone(userService.generateRandomPhoneNumber());
         }
 
-        User user = userService.findByEmail(principal.getName());
+        User user = userService.getUser(principal.getName());
                                 
         if (inputCode.equals(generatedCode)) {
             orderService.placeOrder(request, user);

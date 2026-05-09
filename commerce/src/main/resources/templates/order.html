@@ -32,6 +32,7 @@
     <div class="forms-column">
 
        <form th:action="@{/payment/process}" th:object="${order}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     
             <div class="form-section">
                 <div class="section-label">
@@ -120,11 +121,11 @@
             <!-- IMAGE -->
             <div class="summary-item-image">
 
-                <img th:if="${item.product.images != null and !item.product.images.empty}"
-                     th:src="@{'/images/watches/' + ${item.product.images[0].imageUrl}}"
+                <img th:if="${item.product.image != null}"
+                     th:src="@{'/images/watches/' + ${item.product.image.imageUrl}}"
                      th:alt="${item.product.name}">
 
-                <img th:if="${item.product.images == null or item.product.images.empty}"
+                <img th:if="${item.product.image == null}"
                      src="/images/watches/default.jpg"
                      alt="Görsel Yok">
 

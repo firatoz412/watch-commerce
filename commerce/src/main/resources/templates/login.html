@@ -60,8 +60,6 @@
                 <h1 class="page-title" style="font-size:32px; font-weight:500; margin-bottom:35px; text-align:center">Giriş Yap</h1>
 
                <form th:action="@{/login}" method="post">
-
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <div style="margin-bottom:20px;">
                         <label class="form-label" for="email">E-posta Adresi</label>
                         <input class="form-input" type="email" id="email" name ="username" placeholder="ornek@mail.com">
