@@ -1,6 +1,8 @@
 package com.watch.commerce.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.service.cart.CartService;
+import com.watch.commerce.service.favorite.FavoriteService;
 import com.watch.commerce.service.product.ProductService;
 
 
@@ -21,10 +24,12 @@ public class ProductController {
 
     private final CartService cartService;
     private final ProductService productService;
+    private final FavoriteService favoriteService;
 
-    public ProductController(ProductService productService,CartService cartService){
+    public ProductController(ProductService productService, CartService cartService, FavoriteService favoriteService){
         this.productService = productService;
         this.cartService = cartService;
+        this.favoriteService = favoriteService;
     }
     
 
@@ -48,9 +53,16 @@ public class ProductController {
             cart = cartService.getOrCreate(userDetails.getUsername());
         }
 
+        // Favori ürün ID'lerini al (kalp ikonu durumu için)
+        Set<Long> favoriteProductIds = Collections.emptySet();
+        if(userDetails != null){
+            favoriteProductIds = favoriteService.getFavoriteProductIds(userDetails.getUsername());
+        }
+
         model.addAttribute("cart", cart);//burdaki cart dtodur;
         model.addAttribute("products", products);
         model.addAttribute("activeBrand", keyword);
+        model.addAttribute("favoriteProductIds", favoriteProductIds);
         return "products"; 
     }
     

@@ -225,6 +225,23 @@
             fill: #ff0000;
         }
 
+        /* Favorilere eklenmiş ürünlerin kalp ikonu */
+        .btn-fav-filled {
+            border-color: #e53e3e;
+        }
+        .btn-fav-filled svg {
+            fill: #e53e3e;
+            stroke: #e53e3e;
+        }
+        .btn-fav-filled:hover {
+            background: #e53e3e;
+            border-color: #e53e3e;
+        }
+        .btn-fav-filled:hover svg {
+            fill: #fff;
+            stroke: #fff;
+        }
+
         /* Product info */
         .card-body {
             padding: 14px 16px 0;
