@@ -24,16 +24,12 @@ public class PasswordController {
     @PostMapping("/auth/forgot-password")
     public String processForgotPassword(@RequestParam String email, Model model) {
         try {
-            System.out.println("DEBUG: Şifre sıfırlama işlemi başladı. Email: " + email);
             passwordResetService.createPasswordResetToken(email);
-            System.out.println("DEBUG: İşlem başarıyla tamamlandı.");
             model.addAttribute("message", "E-posta adresinize sıfırlama linki gönderildi.");
         } catch (Exception e) {
-            System.err.println("!!! HATA OLUŞTU !!!");
-            e.printStackTrace();
             model.addAttribute("error", "Hata detayı: " + e.getClass().getSimpleName() + " - " + e.getMessage());
         }
-        return "forgot-password"; // Aynı sayfada mesaj gösterir
+        return "forgot-password";
     }
 
     //yeni şifre belirleme formuna yönlendir
@@ -52,7 +48,7 @@ public class PasswordController {
                                        Model model) {
         try {
             passwordResetService.updatePassword(token, password);
-            return "redirect:/login?resetSuccess"; // Şifre değişince login'e yönlendir
+            return "redirect:/login?resetSuccess"; 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "reset-password";

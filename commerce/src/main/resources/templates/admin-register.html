@@ -60,21 +60,21 @@
                 <h1 class="page-title" style="font-size:32px; margin-bottom:8px;">Hesap Oluştur</h1>
         
 
-                <form th:action="@{/register}" method="post" th:object="${registerRequest}">
+                <form th:action="@{/admin/register}" method="post" th:object="${registerRequest}">
 
                     <!-- AD SOYAD -->
                     <div class="form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
                         <div>
                             <label class="form-label" for="firstName">Ad</label>
-                            <input class="form-input" type="text" id="firstName" th:field="*{firstName}"placeholder="Adınız">
+                            <input class="form-input" type="text" id="firstName" th:field="*{firstName}"placeholder="yönetici adı">
                         </div>
                         <div>
                             <label class="form-label" for="lastName">Soyad</label>
-                            <input class="form-input" type="text" id="lastName" th:field="*{lastName}" placeholder="Soyadınız" >
+                            <input class="form-input" type="text" id="lastName" th:field="*{lastName}" placeholder="yönetici soyadı" >
                         </div>
                     </div>
 
-                     <!-- şehir -->
+                    <!-- şehir -->
                     <div style="margin-bottom:18px;">
                         <label class="form-label" for="city">Şehir</label>
 
@@ -103,7 +103,6 @@
                             Lütfen adres bilgisi girin.
                         </span>
                     </div>
-                    
 
                     <!-- E-POSTA -->
                     <div style="margin-bottom:18px;">

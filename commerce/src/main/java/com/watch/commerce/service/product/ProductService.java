@@ -19,6 +19,7 @@ import com.watch.commerce.model.Category;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.CategoryRepository;
+import com.watch.commerce.repository.ImageRepository;
 import com.watch.commerce.repository.ProductRepository;
 import com.watch.commerce.request.AddProductRequest;
 import com.watch.commerce.request.UpdateProductRequest;
@@ -29,14 +30,19 @@ import com.watch.commerce.service.image.ImageService;
 @Service
 public class ProductService implements IProductService {
     
+    private final ImageRepository imageRepository;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ImageService imageService;
 
-    public ProductService(ProductRepository productRepository,CategoryRepository categoryRepository,ImageService imageService){
+    public ProductService(ProductRepository productRepository,
+        CategoryRepository categoryRepository,
+        ImageService imageService,
+        ImageRepository imageRepository){
         this.productRepository = productRepository; 
         this.categoryRepository = categoryRepository;
         this.imageService = imageService;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -101,25 +107,34 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public ProductDto updateProduct(UpdateProductRequest request, Long productId) {
-        Product existingProduct = productRepository.findById(productId)
+    public ProductDto updateProduct(UpdateProductRequest request,MultipartFile file, Long productId) {
+            Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("product not found"));
 
-        existingProduct.setName(request.getProductName());
-        existingProduct.setPrice(request.getPrice());
-        existingProduct.setBrand(request.getBrand());
-        existingProduct.setStock(request.getStock());
-        if (request.getCategory() != null) {
-            existingProduct.setCategory(request.getCategory());
-        }else{
-            Category category = new Category();
-            category.setName("watch");
-        }
-        if (request.getProductImage() != null && !request.getProductImage().isEmpty()) {
-            imageService.saveImage(request.getProductImage(),existingProduct);
-        }
-        Product updatedProduct = productRepository.save(existingProduct);
-        return convertToDto(updatedProduct);
+                existingProduct.setName(request.getProductName());
+                existingProduct.setPrice(request.getPrice());
+                existingProduct.setBrand(request.getBrand());
+                existingProduct.setStock(request.getStock());
+
+                if (request.getCategory() != null) {
+                    existingProduct.setCategory(request.getCategory());
+                }else{
+                    Category category = new Category();
+                    category.setName("watch");
+                }
+
+                if (file != null && !file.isEmpty()) {
+                    if (existingProduct.getImage() != null) {
+                        imageRepository.delete(existingProduct.getImage());
+                        imageRepository.flush();
+                        existingProduct.setImage(null);
+                        productRepository.saveAndFlush(existingProduct);
+                    }
+                    imageService.saveImage(file, existingProduct);
+                }
+                Product updatedProduct = productRepository.save(existingProduct);
+                return convertToDto(updatedProduct);
+
     }
 
     @Override

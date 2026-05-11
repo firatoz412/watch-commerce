@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class CreateUserRequest {
 
+
     @NotBlank(message="isim boş girilemez")
     private String firstname;
 
@@ -20,5 +21,10 @@ public class CreateUserRequest {
 
     //kayıt sayfasında telefon ekleme yok şimdilik not null eklemiyorum
     private String phone;
+
+    private Long cityId;
+
+    @NotBlank(message="adres boş bırakılamaz")
+    private String address;
     
 }

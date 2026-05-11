@@ -10,23 +10,30 @@ import org.springframework.stereotype.Service;
 import com.watch.commerce.dto.UserDto;
 import com.watch.commerce.exception.AnExistingEmailException;
 import com.watch.commerce.exception.ResourceNotFoundException;
-import com.watch.commerce.model.Role;
+import com.watch.commerce.model.Address;
+import com.watch.commerce.model.City;
 import com.watch.commerce.model.User;
-import com.watch.commerce.repository.RoleRepository;
+import com.watch.commerce.repository.CityRepository;
 import com.watch.commerce.repository.UserRepository;
 import com.watch.commerce.request.CreateUserRequest;
+import com.watch.commerce.service.role.RoleService;
 
 @Service
 public class UserService implements IUserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
+    private final CityRepository cityRepository;
 
-    public UserService(UserRepository userRepository,RoleRepository roleRepository, PasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository,
+         PasswordEncoder passwordEncoder,
+        RoleService roleService,
+    CityRepository cityRepository){
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
+        this.cityRepository = cityRepository;
     }
 
     @Override
@@ -38,7 +45,7 @@ public class UserService implements IUserService {
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().filter(user -> user.getRole() != null && user != null)
+        return users.stream().filter(user -> user.getRole() != null)
         .map(this::convertToDto)
         .collect(Collectors.toList());
         
@@ -53,7 +60,6 @@ public class UserService implements IUserService {
 
     }
 
-    
     public String generateRandomPhoneNumber() {
         Random random = new Random();
         
@@ -70,9 +76,6 @@ public class UserService implements IUserService {
             throw new AnExistingEmailException("bu e-posta zaten kayıtlı");
         }
 
-        Role role = roleRepository.findByRole("ROLE_USER").orElseThrow(
-            () -> new ResourceNotFoundException("rol bulunamadı.")
-        );
         String phoneNumber = generateRandomPhoneNumber();
 
         User user = new User();
@@ -81,7 +84,38 @@ public class UserService implements IUserService {
         user.setEmail(request.getEmail());
         user.setPhone(phoneNumber);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
+        roleService.assignRoleToUser(user, "ROLE_USER");
+
+        City city = cityRepository.findById(request.getCityId())
+        .orElseThrow(() -> new RuntimeException("Şehir bulunamadı"));
+        Address address = new Address();
+        address.setFullAddress(request.getAddress());
+        address.setCity(city);
+        user.setAddress(address);
+        address.setUser(user);
+
+
+        User savedUser = userRepository.save(user);
+        return convertToDto(savedUser);
+
+    }
+
+    @Override
+    public UserDto createAdmin(CreateUserRequest request){
+
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new AnExistingEmailException("bu e-posta zaten kayıtlı");
+        }
+        
+        String phoneNumber = generateRandomPhoneNumber();
+
+        User user = new User();
+        user.setFirstName(request.getFirstname());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPhone(phoneNumber);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        roleService.assignRoleToUser(user, "ROLE_ADMIN");
 
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
@@ -95,6 +129,13 @@ public class UserService implements IUserService {
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
         userDto.setPhone(user.getPhone());
+
+        if (user.getAddress() != null) {
+            userDto.setAddress(user.getAddress().getFullAddress()); 
+            if (user.getAddress().getCity() != null) {
+                userDto.setCity(user.getAddress().getCity().getCityName());
+            }
+        }
         
         if(user.getRole() != null){
             //Role sınıfındaki role alanını set ediyoruz

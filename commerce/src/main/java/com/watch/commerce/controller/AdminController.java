@@ -1,5 +1,4 @@
 package com.watch.commerce.controller;
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -12,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.dto.UserDto;
 import com.watch.commerce.request.AddProductRequest;
 import com.watch.commerce.request.UpdateProductRequest;
+import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.category.CategoryService;
 import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
@@ -23,17 +24,20 @@ import com.watch.commerce.service.user.UserService;
 @Controller
 public class AdminController{
 
+    private final CartService cartService;
     private final ProductService productService;
     private final UserService userService;
     private final CategoryService categoryService;
 
     public AdminController(ProductService productService,
                            UserService userService,
-                           CategoryService categoryService    
+                           CategoryService categoryService, 
+                           CartService cartService    
                         ){
         this.productService = productService;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.cartService = cartService;
     }
 
     @GetMapping("/admin/products")//admin sayfasında ürünleri görür
@@ -50,13 +54,18 @@ public class AdminController{
 
     //admin dashoard sayfasını açar
     @GetMapping("/admin/dashboard")
-    public String adminDashboard(Model model){
+    public String adminDashboard(Model model,Principal principal){
+        if(principal == null){
+            return "redirect:/login";
+        }
+
+        CartDto cart = cartService.getCartByEmail(principal.getName());
         model.addAttribute("totalProducts", productService.getAllProducts().size());
         model.addAttribute("totalUsers", userService.getAllUsers().size());
         model.addAttribute("totalOrders", 0);   // sipariş servisin hazır olunca
-        model.addAttribute("totalRevenue", BigDecimal.ZERO); // gelir servisin hazır olunca
+        model.addAttribute("totalRevenue", cartService.getTotalItemCount(cart)); // gelir servisin hazır olunca
         model.addAttribute("adminName", "Admin");
-        return "Admin-dashboard";
+        return "admin-dashboard";
     }
 
     //admin users listesini görür
@@ -81,7 +90,7 @@ public class AdminController{
             return "redirect:/login";
         }
         userService.deleteUser(userId);
-        return "users";
+        return "redirect:/admin/users";
     }
 
 
@@ -100,13 +109,17 @@ public class AdminController{
 
    @PostMapping("/admin/products/add")
    public String addNewProduct(@ModelAttribute AddProductRequest request, 
-                                @RequestParam("productImage") MultipartFile file) {
+                                @RequestParam("productImage") MultipartFile file,
+                            Model model) {
 
         try {
             productService.addProduct(request, file);
             return "redirect:/admin/products";
         } catch (Exception e) {
-            return "productForm"; 
+            model.addAttribute("productRequest", request);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("errorMessage", e.getMessage());
+            return "productForm";
         }
     } 
 
@@ -118,13 +131,24 @@ public class AdminController{
         model.addAttribute("categories", categoryService.getAllCategories()); // bunu ekle
         model.addAttribute("adminName", "Admin");
         
-        return "productForm";
+        return "updateProductForm";
     }
 
     @PostMapping("/admin/products/update/{productId}")//ürünü güncelle
-    public String updateProduct(@ModelAttribute UpdateProductRequest product,@PathVariable Long productId){
-        productService.updateProduct(product, productId);//product = request
-        return "redirect:/admin/products";
+    public String updateProduct(@ModelAttribute UpdateProductRequest request,
+        @PathVariable Long productId,
+        @RequestParam("productImage") MultipartFile file,
+        Model model){
+        try {
+            productService.updateProduct(request,file,productId);
+            return "redirect:/admin/products";
+        } catch (Exception e) {
+            ProductDto product = productService.getProductById(productId);
+            model.addAttribute("product", product);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("errorMessage", e.getMessage());
+            return "updateProductForm";
+        }
     }
 
     @PostMapping("/admin/products/delete/{productId}")//ürünü sil

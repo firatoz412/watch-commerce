@@ -17,6 +17,8 @@ public interface IUserService {
 
     UserDto createUser(CreateUserRequest request);
 
+    UserDto createAdmin(CreateUserRequest request);
+
     void deleteUser(Long userId);
     
 

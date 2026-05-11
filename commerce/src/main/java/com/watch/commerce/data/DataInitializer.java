@@ -34,12 +34,12 @@ public class DataInitializer implements ApplicationRunner {
             adminRole.setRole("ROLE_ADMIN");
             roleRepository.save(adminRole);
         }
-        if (userRepository.findByEmail("admin@saatmagasasi.com").isEmpty()) {
+        if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             Role adminRole = roleRepository.findByRole("ROLE_ADMIN").get();
             User admin = new User();
             admin.setFirstName("Admin");
             admin.setLastName("User");
-            admin.setEmail("admin@saatmagasasi.com");
+            admin.setEmail("admin@gmail.com");
             admin.setPassword(passwordEncoder.encode("12345678"));
             admin.setRole(adminRole);
             userRepository.save(admin);

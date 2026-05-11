@@ -20,11 +20,12 @@ public class UserDetailsService implements IUserDetailsService{
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + email));
+            String roleName = user.getRole().getRole().replace("ROLE_", "");
 
         return org.springframework.security.core.userdetails.User
             .withUsername(user.getEmail())
             .password(user.getPassword())
-            .authorities(user.getRole().getRole())// "ROLE_USER" veya "ROLE_ADMIN"
+            .roles(roleName)// "ROLE_USER" veya "ROLE_ADMIN"
             .build();
     }
 

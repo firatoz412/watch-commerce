@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +24,10 @@ public class Address {
     private Long id;
 
     
-    //bir user birden fazla adrese sahip olabilir
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    //bir şehirde birden fazla adres olabilir
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;

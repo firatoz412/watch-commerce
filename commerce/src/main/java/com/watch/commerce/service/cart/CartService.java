@@ -150,13 +150,13 @@ public class CartService implements ICartService {
         cartRepository.save(cart);
     }
 
-    public int getTotalItemCount(Cart cart) {
+    public int getTotalItemCount(CartDto cart) {
         if (cart == null || cart.getItems() == null) {
             return 0;
         }
         return cart.getItems().
         stream().
-        mapToInt(CartItem::getQuantity).
+        mapToInt(CartItemDto::getQuantity).
         sum();
     }
 
