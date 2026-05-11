@@ -51,7 +51,7 @@ public class AuthController {
         if(principal != null){
             return "redirect:/";
         }
-        return "home";
+        return "homePage";
     }
     
     @GetMapping("/register")

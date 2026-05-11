@@ -1,6 +1,4 @@
 package com.watch.commerce.service.image;
-
-import java.awt.Image;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

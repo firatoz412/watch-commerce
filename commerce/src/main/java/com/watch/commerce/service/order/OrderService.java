@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.CartItemDto;
@@ -96,40 +97,48 @@ public class OrderService implements IOrderService{
         order.setPaymentMethod(PaymentMethod.KREDI_KARTI);
         order.setTransactionId("TXNN-" +System.currentTimeMillis());//sahte id
 
-        user.setBalance(user.getBalance().subtract(totalPrice));
-        userRepository.save(user);
-      
-        List<OrderItem> orderItems = new ArrayList<>();
 
-        for(CartItemDto cartItem : cart.getItems()){
-            Product product = productRepository.findById(cartItem.getProduct().getId()).orElseThrow(
-                () -> new ResourceNotFoundException("")
-            );
-            //veri tabanında gerçek stoku görmek için cartItem yerine product ile kontrol ediyoruz
-            if(product.getStock() < cartItem.getQuantity()){
-                throw new ResourceNotFoundException("yetersiz stok");
-            }
-
-            //ürün stoğunu azaltalım;
-            product.setStock(product.getStock() - cartItem.getQuantity());
-            productRepository.save(product);
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(product);
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPriceAtPurchase(cartItem.getUnitPrice());
-            orderItem.setOrder(order);
-            
-            orderItems.add(orderItem);
-
-        }
-        order.setOrderItems(orderItems);
-        Order savedOrder = orderRepository.save(order);
-        cartService.clearCart(cart.getId());
+        try{
+            user.setBalance(user.getBalance().subtract(totalPrice));
+            userRepository.save(user);
         
-        orderResponse.setSuccess(true);
-        orderResponse.setMessage("sipariş başarıyla oluşturuldu.");
-        orderResponse.setOrder(convertToDto(savedOrder));
+            List<OrderItem> orderItems = new ArrayList<>();
+
+            for(CartItemDto cartItem : cart.getItems()){
+                Product product = productRepository.findById(cartItem.getProduct().getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("")
+                );
+
+                OrderItem orderItem = new OrderItem();
+                orderItem.setProduct(product);
+                orderItem.setQuantity(cartItem.getQuantity());
+                orderItem.setPriceAtPurchase(cartItem.getUnitPrice());
+                orderItem.setOrder(order);
+                
+                orderItems.add(orderItem);
+
+            }
+            order.setOrderItems(orderItems);
+        
+    
+            Order savedOrder = orderRepository.save(order);
+            cartService.clearCart(cart.getId());
+            
+            orderResponse.setSuccess(true);
+            orderResponse.setMessage("sipariş başarıyla oluşturuldu.");
+            orderResponse.setOrder(convertToDto(savedOrder));
+            
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            orderResponse.setSuccess(false);
+
+            if(e.getMessage().contains("stok yetersiz")){
+                orderResponse.setMessage("seçtiğiniz ürünün stoğu yetersiz");
+            }else{
+                orderResponse.setMessage("sipariş sırasında hata oluştu.");
+            }
+        }
+        
         return orderResponse;
     }
 

@@ -40,12 +40,13 @@ public class AuthService implements IAuthService {
             throw new RuntimeException("şifreler eşleşmiyor.");
         }
 
-        CreateUserRequest createUserRequest = new CreateUserRequest(); 
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        City city = cityService.getCityById(request.getCityId());
+
         createUserRequest.setFirstname(request.getFirstName());
         createUserRequest.setLastName(request.getLastName());
         createUserRequest.setEmail(request.getEmail());
         createUserRequest.setPassword(request.getPassword());
-        City city = cityService.getCityById(request.getCityId());
         createUserRequest.setCityId(city.getId());
         createUserRequest.setAddress(request.getAddress());
         return userService.createUser(createUserRequest);
