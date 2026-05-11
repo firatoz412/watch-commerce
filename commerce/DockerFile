@@ -1,0 +1,17 @@
+# 1. Aşama: Build (Derleme)
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+# Proje dosyalarını kopyala
+COPY . .
+# Projeyi paketle 
+RUN mvn clean package -DskipTests
+
+# 2. Aşama: Run (Çalıştırma)
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /app
+# Derlenen JAR dosyasını kopyala
+COPY --from=build /app/target/commerce-0.0.1-SNAPSHOT.jar app.jar
+# Portu aç
+EXPOSE 8080
+# Uygulamayı başlat
+ENTRYPOINT ["java", "-jar", "app.jar"]
