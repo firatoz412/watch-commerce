@@ -56,6 +56,14 @@ public class UserService implements IUserService {
         User user = userRepository.findById(userId).orElseThrow(
             () -> new ResourceNotFoundException(userId + "'ye sahip bir kullanıcı bulunamadı")
         );
+        if (user.getCart() != null) {
+            user.getCart().setUser(null);
+            user.setCart(null);          
+        }
+        if(user.getAddress() != null){
+            user.getAddress().setUser(null);
+            user.setAddress(null);
+        }
         userRepository.delete(user);
 
     }
