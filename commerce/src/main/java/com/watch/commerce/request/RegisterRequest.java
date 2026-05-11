@@ -1,6 +1,7 @@
 package com.watch.commerce.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,4 +25,9 @@ public class RegisterRequest {
     @NotBlank(message="şifre tekrarı boş bırakılamaz")
     private String confirmPassword;
     
+    @NotNull(message="şehir seçilmedi")
+    private Long cityId;
+
+    @NotBlank(message="adres alanı boş bırakılamaz")
+    private String address;
 }
