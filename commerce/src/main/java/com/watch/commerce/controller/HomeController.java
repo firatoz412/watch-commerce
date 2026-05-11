@@ -30,7 +30,7 @@ public String homePage(Model model, Principal principal) {
         model.addAttribute("cart", null);
     }
     
-    return "HomePage";
+    return "homePage";
 }
 
 
