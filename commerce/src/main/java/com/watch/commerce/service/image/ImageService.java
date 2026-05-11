@@ -1,6 +1,4 @@
 package com.watch.commerce.service.image;
-
-import java.awt.Image;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +14,6 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.ImageRepository;
-import com.watch.commerce.service.product.ProductService;
 
 
 @Service
