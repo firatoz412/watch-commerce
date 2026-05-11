@@ -14,6 +14,7 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.ImageRepository;
+import com.watch.commerce.service.product.ProductService;
 
 
 @Service

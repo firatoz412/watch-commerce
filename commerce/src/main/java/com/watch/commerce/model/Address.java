@@ -24,7 +24,7 @@ public class Address {
     private Long id;
 
     
-    @OneToOne(mappedBy="address")
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
