@@ -1,11 +1,5 @@
 package com.watch.commerce.service.product;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +11,6 @@ import com.watch.commerce.dto.ProductImageDto;
 import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Category;
 import com.watch.commerce.model.Product;
-import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.CategoryRepository;
 import com.watch.commerce.repository.ImageRepository;
 import com.watch.commerce.repository.ProductRepository;
@@ -75,31 +68,10 @@ public class ProductService implements IProductService {
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> {throw new ResourceNotFoundException("kategori bulunamadı");});
         product.setCategory(category);
         
-        String uploadDir = "C:/ecommerce/uploads/";
-        if (!file.isEmpty()) {
-            try {
-                //aynı isimde başka bir resim olmasın diye rastgele 36 haneli benzersiz metin üretiyoruz
-                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                Path uploadPath = Paths.get(uploadDir);
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                Path savePath = uploadPath.resolve(fileName);
-                Files.copy(file.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
-
-                ProductImage productImage = new ProductImage();
-                productImage.setImageUrl(fileName);
-                
-                productImage.setProduct(product); 
-                product.setImage(productImage);
-
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-        }
         Product savedProduct = productRepository.save(product);
+        if (!file.isEmpty()) {
+           imageService.saveImage(file, savedProduct);
+        }
         return convertToDto(savedProduct);
     }
 
