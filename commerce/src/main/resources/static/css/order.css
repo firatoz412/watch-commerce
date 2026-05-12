@@ -20,6 +20,7 @@
             min-height: 100vh;
         }
 
+        
         header {
             background: var(--white);
             border-bottom: 1px solid var(--border);
