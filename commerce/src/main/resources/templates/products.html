@@ -62,7 +62,7 @@
                         Tümü
                     </a>
                 </li>
-                <th:block th:each="brandName : ${ {'rolex','omega','tagheuer','seiko','tissot'} }">
+                <th:block th:each="brandName : ${ {'rolex','omega','tagheuer','seiko','tissot','cartier'} }">
                     <li>
                         <a th:href="@{/products(keyword=${brandName})}" class="brand-link"
                             th:text="${#strings.capitalize(brandName)}"

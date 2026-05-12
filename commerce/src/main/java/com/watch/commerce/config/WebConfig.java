@@ -6,9 +6,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/watches/**")
-                .addResourceLocations("file:C:/ecommerce/uploads/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:commerce/src/main/resources/static/images/")
+                .addResourceLocations("classpath:/static/images/");
     }
 }

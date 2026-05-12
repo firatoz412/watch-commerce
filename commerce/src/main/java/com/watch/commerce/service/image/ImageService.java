@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,6 @@ import com.watch.commerce.exception.ResourceNotFoundException;
 import com.watch.commerce.model.Product;
 import com.watch.commerce.model.ProductImage;
 import com.watch.commerce.repository.ImageRepository;
-import com.watch.commerce.service.product.ProductService;
 
 
 @Service
@@ -22,7 +22,8 @@ public class ImageService implements IImageService{
 
     private final ImageRepository imageRepository;
     //Resimlerin kaydedileceği klasör yolu (Örn: "src/main/resources/static/uploads")
-    private final String uploadDir = "C:/ecommerce/uploads/";
+    @Value("${upload.dir}")
+    private String uploadDir;
 
     public ImageService(ImageRepository imageRepository){
         this.imageRepository = imageRepository;
@@ -33,8 +34,7 @@ public class ImageService implements IImageService{
         try {
             //benzersiz dosya adı
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            
-            Path path = Paths.get(uploadDir + fileName);
+            Path path = Paths.get(uploadDir).resolve(fileName).normalize();
             Files.createDirectories(path.getParent());//klasör yoksa oluşturur
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
