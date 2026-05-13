@@ -86,9 +86,8 @@
             </span>
             <span class="price-label">KDV Dahil</span>
         </div>
-
        <!--Description-->
-        <div class="desc-block" th:if="${productDto.description != null and !#strings.isEmpty(productDto.description)}">
+        <div class="desc-block" th:if="${productDto?.description != null  and !#strings.isEmpty(productDto.description)}">
             <p class="desc-label">Ürün Hakkında</p>
             <p class="desc-text" th:text="${productDto.description}">Açıklama</p>
         </div> 

@@ -34,9 +34,6 @@ public class CityService implements ICityService{
         return cityRepository.findById(cityId).orElseThrow(
             () -> new ResourceNotFoundException("şehir bulunamadı")
         );
-    }
-
-    
-
+    }  
     
 }
