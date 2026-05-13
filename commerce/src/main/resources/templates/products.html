@@ -15,6 +15,21 @@
     <header>
         <div class="header-inner">
             <a th:href="@{/}" class="logo">SAAT MAĞAZASI</a>
+            <!-- Arama -->
+            <form th:action="@{/products}" method="get">
+                <div class="flex-1 max-w-xl mx-8">
+                    <div class="flex border border-subtle rounded bg-white">
+                        <input type="text"
+                                name = "keyword"
+                                placeholder="saat veya marka ara..."
+                                class="flex-1 px-4 py-2 outline-none rounded-l">
+
+                        <button type="submit" class="px-4 py-2 border-l border-subtle hover:bg-gray-50">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
             <div class="header-actions">
                 <a sec:authorize="!isAuthenticated()" href="/login" class="header-btn">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

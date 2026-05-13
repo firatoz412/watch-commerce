@@ -79,6 +79,7 @@
                         <label class="form-label" for="city">Şehir</label>
 
                         <select th:field="*{cityId}">
+
                             <option th:each="city : ${cities}"
                                     th:value="${city.id}"
                                     th:text="${city.cityName}">

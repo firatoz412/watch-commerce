@@ -13,6 +13,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .rememberMe(remember -> remember
+                .key("gizlianahtar")
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds( 60) // 7 gün
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**","/products/**","/auth/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -36,7 +41,7 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")//çıkış yapan kullanıcı / 'e gider
                 .invalidateHttpSession(true)//kullanıcı oturumunu siler
-                .deleteCookies("JSESSIONID")
+                .deleteCookies("JSESSIONID","remember-me")
                 .permitAll()
             );
 

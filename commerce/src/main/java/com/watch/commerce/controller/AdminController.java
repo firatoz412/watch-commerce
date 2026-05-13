@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.watch.commerce.dto.CartDto;
 import com.watch.commerce.dto.ProductDto;
 import com.watch.commerce.dto.UserDto;
 import com.watch.commerce.request.AddProductRequest;
 import com.watch.commerce.request.UpdateProductRequest;
 import com.watch.commerce.service.cart.CartService;
 import com.watch.commerce.service.category.CategoryService;
+import com.watch.commerce.service.order.OrderService;
 import com.watch.commerce.service.product.ProductService;
 import com.watch.commerce.service.user.UserService;
 
@@ -28,16 +28,19 @@ public class AdminController{
     private final ProductService productService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final OrderService orderService;
 
     public AdminController(ProductService productService,
                            UserService userService,
                            CategoryService categoryService, 
-                           CartService cartService    
+                           CartService cartService,
+                           OrderService orderService  
                         ){
         this.productService = productService;
         this.userService = userService;
         this.categoryService = categoryService;
         this.cartService = cartService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/admin/products")//admin sayfasında ürünleri görür
@@ -59,11 +62,10 @@ public class AdminController{
             return "redirect:/login";
         }
 
-        CartDto cart = cartService.getCartByEmail(principal.getName());
         model.addAttribute("totalProducts", productService.getAllProducts().size());
         model.addAttribute("totalUsers", userService.getAllUsers().size());
-        model.addAttribute("totalOrders", 0);   // sipariş servisin hazır olunca
-        model.addAttribute("totalRevenue", cartService.getTotalItemCount(cart)); // gelir servisin hazır olunca
+        model.addAttribute("totalOrders", orderService.getTotalOrdersCount());
+        model.addAttribute("totalRevenue", orderService.getTotalRevenue());
         model.addAttribute("adminName", "Admin");
         return "admin-dashboard";
     }

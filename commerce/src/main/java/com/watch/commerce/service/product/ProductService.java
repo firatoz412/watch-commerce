@@ -137,6 +137,7 @@ public class ProductService implements IProductService {
         dto.setCategory(product.getCategory());
         dto.setBrand(product.getBrand());
         dto.setStock(product.getStock());
+        dto.setDescription(product.getDescription());
 
         // Resimleri Entity listesinden DTO listesine çeviriyoruz
         if (product.getImage() != null) {

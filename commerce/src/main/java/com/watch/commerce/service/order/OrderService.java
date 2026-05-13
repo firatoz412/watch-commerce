@@ -191,12 +191,12 @@ public class OrderService implements IOrderService{
     }
 
 
-
-
-    
-
-
-
+    public Long getTotalOrdersCount() {
+        return orderRepository.count();
+    }
+    public BigDecimal getTotalRevenue() {
+        return orderRepository.calculateTotalRevenue();
+    }
 
 
 
